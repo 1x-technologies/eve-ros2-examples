@@ -12,6 +12,12 @@ git clone https://github.com/Halodi/eve-ros2-examples.git
 colcon build
 . install/setup.bash
 ```
+Then launch the gazebo sim of EVE. 
+```bash
+ros2 launch halodi-controller-gazebo halodi-controller-gazebo.launch.py
+```
+
+Once it's running, open a different terminal and try the different commands for the different examples below.
 
 ## Driving Command Example
 This example makes EVE drive in a circle using the DrivingCommand ROS2 Message. Run the example using the following:
