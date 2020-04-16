@@ -10,7 +10,7 @@ and build again to start using the examples
 cd ~/eve_ws/src
 git clone https://github.com/Halodi/eve-ros2-examples.git
 colcon build
-. instal/setup.bash
+. install/setup.bash
 ```
 
 ## Driving Command Example
