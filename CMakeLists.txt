@@ -27,7 +27,10 @@ find_package(halodi_msgs REQUIRED)
 add_executable(drive_command_publisher src/drive_command_publisher.cpp)
 ament_target_dependencies(drive_command_publisher rclcpp std_msgs halodi_msgs)
 
-install(TARGETS drive_command_publisher DESTINATION lib/${PROJECT_NAME})
+add_executable(whole_body_trajectory_publisher src/whole_body_trajectory_publisher.cpp)
+ament_target_dependencies(whole_body_trajectory_publisher rclcpp std_msgs halodi_msgs)
+
+install(TARGETS drive_command_publisher whole_body_trajectory_publisher DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
