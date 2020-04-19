@@ -15,6 +15,8 @@
 #include <chrono>
 #include <memory>
 #include <boost/math/constants/constants.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "builtin_interfaces/msg/duration.hpp"
@@ -23,6 +25,7 @@
 #include "geometry_msgs/msg/quaternion.hpp"
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
+#include "unique_identifier_msgs/msg/uuid.hpp"
 #include "halodi_msgs/msg/whole_body_trajectory.hpp"
 #include "halodi_msgs/msg/reference_frame_name.hpp"
 #include "halodi_msgs/msg/trajectory_interpolation.hpp"
@@ -50,28 +53,33 @@ public:
 private:
   void timer_callback()
   {
-    auto trajectory_msg = WholeBodyTrajectory();
-    trajectory_msg.append_trajectory = true;
+    WholeBodyTrajectory trajectory_msg;
+    trajectory_msg.append_trajectory = false;
     trajectory_msg.interpolation_mode.value = TrajectoryInterpolation::MINIMUM_JERK_CONSTRAINED;
+    boost::uuids::random_generator gen; boost::uuids::uuid u = gen();
+    unique_identifier_msgs::msg::UUID uuid_msg;
+    std::array<uint8_t, 16> uuid; std::copy(std::begin(u.data), std::end(u.data), uuid.begin());
+    uuid_msg.uuid = uuid;
+    trajectory_msg.trajectory_id = uuid_msg;
 
-    add_hand_target(trajectory_msg, 1, 0.25, -0.35, 0.20, 0.0, -pi/2.0, 0.0);
-    add_hand_target(trajectory_msg, 2, 0.25, -0.35, 0.05, 0.0, -pi/2.0, 0.0);
-    add_hand_target(trajectory_msg, 3, 0.25, -0.15, 0.05, 0.0, -pi/2.0, 0.0);
-    add_hand_target(trajectory_msg, 4, 0.25, -0.15, 0.20, 0.0, -pi/2.0, 0.0);
-    add_hand_target(trajectory_msg, 5, 0.25, -0.35, 0.20, 0.0, -pi/2.0, 0.0);
+    add_hand_target(&trajectory_msg, 1, 0.25, -0.35, 0.20, 0.0, -pi/2.0, 0.0);
+    add_hand_target(&trajectory_msg, 2, 0.25, -0.35, 0.05, 0.0, -pi/2.0, 0.0);
+    add_hand_target(&trajectory_msg, 3, 0.25, -0.15, 0.05, 0.0, -pi/2.0, 0.0);
+    add_hand_target(&trajectory_msg, 4, 0.25, -0.15, 0.20, 0.0, -pi/2.0, 0.0);
+    add_hand_target(&trajectory_msg, 5, 0.25, -0.35, 0.20, 0.0, -pi/2.0, 0.0);
 
     RCLCPP_INFO(this->get_logger(), "WholeBodyTrajectory Executing...");
     publisher_->publish(trajectory_msg);
   }
 
-  void add_hand_target(WholeBodyTrajectory trajectory, int32_t t, double x, double y, double z, double yaw, double pitch, double roll){
-    WholeBodyTrajectoryPoint target = WholeBodyTrajectoryPoint();
-    TaskSpaceCommand rightHandCommand = TaskSpaceCommand();
+  void add_hand_target(WholeBodyTrajectory * trajectory, int32_t t, double x, double y, double z, double yaw, double pitch, double roll){
+    WholeBodyTrajectoryPoint target;
+    TaskSpaceCommand rightHandCommand;
 
-    geometry_msgs::msg::Pose pose = geometry_msgs::msg::Pose();
-    geometry_msgs::msg::Point point = geometry_msgs::msg::Point();
+    geometry_msgs::msg::Pose pose;
+    geometry_msgs::msg::Point point;
     point.x = x; point.y = y; point.z = z;
-    geometry_msgs::msg::Quaternion quat_msg = geometry_msgs::msg::Quaternion();
+    geometry_msgs::msg::Quaternion quat_msg;
     tf2::Quaternion quat_tf;
     quat_tf.setRPY(roll, pitch, yaw);
     quat_msg = tf2::toMsg(quat_tf);
@@ -90,7 +98,7 @@ private:
     target.time_from_start = duration;
 
     target.task_space_commands.push_back(rightHandCommand);
-    trajectory.trajectory_points.push_back(target);
+    trajectory->trajectory_points.push_back(target);
   }
 
   const double pi = boost::math::constants::pi<double>();
