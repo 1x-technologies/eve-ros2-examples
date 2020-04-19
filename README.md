@@ -25,3 +25,10 @@ This example makes EVE drive in a circle using the DrivingCommand ROS2 Message. 
 ros2 run eve-ros2-examples drive_command_publisher
 ```
 You can find the code for this example in [drive_command_publisher.cpp](./src/drive_command_publisher.cpp)
+
+## Wholebody Trajectory Example
+This example makes EVE move her right hand in a 5 point trajectory using the WholeBody trajectory ROS2 Message. Run the example using the following:
+```bash
+ros2 run eve-ros2-examples whole_body_trajectory_publisher
+```
+You can find the code for this example in [whole_body_trajectory_publisher.cpp](./src/whole_body_trajectory_publisher.cpp)
