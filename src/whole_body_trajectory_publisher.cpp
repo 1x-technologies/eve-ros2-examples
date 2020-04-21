@@ -32,9 +32,6 @@
 #include "halodi_msgs/msg/trajectory_interpolation.hpp"
 #include "halodi_msgs/msg/whole_body_trajectory_point.hpp"
 #include "halodi_msgs/msg/task_space_command.hpp"
-#include <boost/interprocess/sync/interprocess_semaphore.hpp>
-
-
 
 using namespace std::chrono_literals;
 using namespace halodi_msgs::msg;
@@ -49,6 +46,7 @@ public:
     publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&WholeBodyTrajectoryPublisher::topic_callback, this, _1));
 
+    //Send the first trajectory command. The subscriber will send additional commands to loop the same command in the subscriber topic_callback
     uuid_msg_ = create_random_uuid();
     publish_whole_body_trajectory(uuid_msg_);
 
@@ -66,13 +64,20 @@ private:
         break;
       case 4:
         RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
+        //If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send another command
+        if(msg->goal_info.goal_id.uuid==uuid_msg_.uuid){
+          uuid_msg_ = create_random_uuid();
+          publish_whole_body_trajectory(uuid_msg_);
+        }
         break;
       default:
         break;
     }
+
   }
 
-  unique_identifier_msgs::msg::UUID create_random_uuid(){
+  unique_identifier_msgs::msg::UUID create_random_uuid() const
+  {
     //Create a random uuid to track msgs
     boost::uuids::random_generator gen; boost::uuids::uuid u = gen();
     unique_identifier_msgs::msg::UUID uuid_msg;
@@ -81,7 +86,7 @@ private:
     return uuid_msg;
   }
 
-  void publish_whole_body_trajectory(unique_identifier_msgs::msg::UUID uuid_msg)
+  void publish_whole_body_trajectory(unique_identifier_msgs::msg::UUID uuid_msg) const
   {
     WholeBodyTrajectory trajectory_msg;
     trajectory_msg.append_trajectory = false;
@@ -100,7 +105,8 @@ private:
 
   }
 
-  void add_hand_target(WholeBodyTrajectory * trajectory, int32_t t, double x, double y, double z, double yaw, double pitch, double roll, ReferenceFrameName::_frame_id_type frame){
+  void add_hand_target(WholeBodyTrajectory * trajectory, int32_t t, double x, double y, double z, double yaw, double pitch, double roll, ReferenceFrameName::_frame_id_type frame) const
+  {
     WholeBodyTrajectoryPoint target;
     TaskSpaceCommand hand_command;
 
@@ -136,7 +142,7 @@ private:
   const double pi_ = boost::math::constants::pi<double>();
   rclcpp::Publisher<WholeBodyTrajectory>::SharedPtr publisher_;
   rclcpp::Subscription<action_msgs::msg::GoalStatus>::SharedPtr subscription_;
-  unique_identifier_msgs::msg::UUID uuid_msg_;
+  mutable unique_identifier_msgs::msg::UUID uuid_msg_;
 };
 
 int main(int argc, char * argv[])
