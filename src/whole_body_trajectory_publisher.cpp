@@ -23,6 +23,7 @@
 #include "geometry_msgs/msg/pose.hpp"
 #include "geometry_msgs/msg/point.hpp"
 #include "geometry_msgs/msg/quaternion.hpp"
+#include "action_msgs/msg/goal_status.hpp"
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include "unique_identifier_msgs/msg/uuid.hpp"
@@ -31,51 +32,87 @@
 #include "halodi_msgs/msg/trajectory_interpolation.hpp"
 #include "halodi_msgs/msg/whole_body_trajectory_point.hpp"
 #include "halodi_msgs/msg/task_space_command.hpp"
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
+
 
 
 using namespace std::chrono_literals;
 using namespace halodi_msgs::msg;
-
-
-/* This example creates a subclass of Node and uses std::bind() to register a
- * member function as a callback from the timer. */
+using std::placeholders::_1;
 
 class WholeBodyTrajectoryPublisher : public rclcpp::Node
 {
 public:
   WholeBodyTrajectoryPublisher()
-  : Node("whole_body_trajectory_publisher"), count_(0)
+  : Node("whole_body_trajectory_publisher")
   {
     publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
-    timer_ = this->create_wall_timer(5000ms, std::bind(&WholeBodyTrajectoryPublisher::timer_callback, this));
+    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&WholeBodyTrajectoryPublisher::topic_callback, this, _1));
+
+    uuid_msg_ = create_random_uuid();
+    publish_whole_body_trajectory(uuid_msg_);
+
   }
 
 private:
-  void timer_callback()
+  void topic_callback(const action_msgs::msg::GoalStatus::SharedPtr msg) const
   {
-    WholeBodyTrajectory trajectory_msg;
-    trajectory_msg.append_trajectory = false;
-    trajectory_msg.interpolation_mode.value = TrajectoryInterpolation::MINIMUM_JERK_CONSTRAINED;
+    switch(msg->status){
+      case 1:
+        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
+        break;
+      case 2:
+        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_EXECUTING");
+        break;
+      case 4:
+        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
+        break;
+      default:
+        break;
+    }
+  }
+
+  unique_identifier_msgs::msg::UUID create_random_uuid(){
+    //Create a random uuid to track msgs
     boost::uuids::random_generator gen; boost::uuids::uuid u = gen();
     unique_identifier_msgs::msg::UUID uuid_msg;
     std::array<uint8_t, 16> uuid; std::copy(std::begin(u.data), std::end(u.data), uuid.begin());
     uuid_msg.uuid = uuid;
-    trajectory_msg.trajectory_id = uuid_msg;
-
-    add_hand_target(&trajectory_msg, 1, 0.25, -0.35, 0.20, 0.0, -pi/2.0, 0.0);
-    add_hand_target(&trajectory_msg, 2, 0.25, -0.35, 0.05, 0.0, -pi/2.0, 0.0);
-    add_hand_target(&trajectory_msg, 3, 0.25, -0.15, 0.05, 0.0, -pi/2.0, 0.0);
-    add_hand_target(&trajectory_msg, 4, 0.25, -0.15, 0.20, 0.0, -pi/2.0, 0.0);
-    add_hand_target(&trajectory_msg, 5, 0.25, -0.35, 0.20, 0.0, -pi/2.0, 0.0);
-
-    RCLCPP_INFO(this->get_logger(), "WholeBodyTrajectory Executing...");
-    publisher_->publish(trajectory_msg);
+    return uuid_msg;
   }
 
-  void add_hand_target(WholeBodyTrajectory * trajectory, int32_t t, double x, double y, double z, double yaw, double pitch, double roll){
-    WholeBodyTrajectoryPoint target;
-    TaskSpaceCommand rightHandCommand;
+  void publish_whole_body_trajectory(unique_identifier_msgs::msg::UUID uuid_msg)
+  {
+    WholeBodyTrajectory trajectory_msg;
+    trajectory_msg.append_trajectory = false;
+    trajectory_msg.interpolation_mode.value = TrajectoryInterpolation::MINIMUM_JERK_CONSTRAINED;
+    trajectory_msg.trajectory_id = uuid_msg;
 
+    //Add targets for hand motions to pick up a box
+    add_hand_target(&trajectory_msg, 1, 0.25, -0.35, 0.20, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::RIGHT_HAND);
+    add_hand_target(&trajectory_msg, 2, 0.25, -0.35, 0.05, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::RIGHT_HAND);
+    add_hand_target(&trajectory_msg, 3, 0.25, -0.15, 0.05, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::RIGHT_HAND);
+    add_hand_target(&trajectory_msg, 4, 0.25, -0.15, 0.20, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::RIGHT_HAND);
+    add_hand_target(&trajectory_msg, 5, 0.25, -0.35, 0.20, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::RIGHT_HAND);
+
+    RCLCPP_INFO(this->get_logger(), "Sending whole_body_trajectory, listening for whole_body_trajectory_status...");
+    publisher_->publish(trajectory_msg);
+
+  }
+
+  void add_hand_target(WholeBodyTrajectory * trajectory, int32_t t, double x, double y, double z, double yaw, double pitch, double roll, ReferenceFrameName::_frame_id_type frame){
+    WholeBodyTrajectoryPoint target;
+    TaskSpaceCommand hand_command;
+
+    //We specify the link frame to move and what reference frame the target pose will be described in here
+    ReferenceFrameName::Type body_frame, reference_frame;
+    body_frame.frame_id = frame;
+    reference_frame.frame_id = ReferenceFrameName::PELVIS;
+    hand_command.body_frame = body_frame;
+    hand_command.expressed_in_frame = reference_frame;
+    hand_command.express_in_z_up = true;
+
+    //Setting a pose requires an x,y,z point and an orientation in the form of a quaternion
     geometry_msgs::msg::Pose pose;
     geometry_msgs::msg::Point point;
     point.x = x; point.y = y; point.z = z;
@@ -84,27 +121,22 @@ private:
     quat_tf.setRPY(roll, pitch, yaw);
     quat_msg = tf2::toMsg(quat_tf);
     pose.position = point; pose.orientation = quat_msg;
-    rightHandCommand.pose = pose;
+    hand_command.pose = pose;
 
-    ReferenceFrameName::Type body_frame, reference_frame;
-    body_frame.frame_id = ReferenceFrameName::RIGHT_HAND;
-    reference_frame.frame_id = ReferenceFrameName::PELVIS;
-    rightHandCommand.body_frame = body_frame;
-    rightHandCommand.expressed_in_frame = reference_frame;
-    rightHandCommand.express_in_z_up = true;
-
+    //We specify the desired time at which the hand should be at its target. Time is seconds after the start of the trajectory
     builtin_interfaces::msg::Duration duration;
     duration.sec = t;
     target.time_from_start = duration;
 
-    target.task_space_commands.push_back(rightHandCommand);
+    //Add the hand command to the list of targets, add the target list to the trajectory points
+    target.task_space_commands.push_back(hand_command);
     trajectory->trajectory_points.push_back(target);
   }
 
-  const double pi = boost::math::constants::pi<double>();
-  rclcpp::TimerBase::SharedPtr timer_;
+  const double pi_ = boost::math::constants::pi<double>();
   rclcpp::Publisher<WholeBodyTrajectory>::SharedPtr publisher_;
-  size_t count_;
+  rclcpp::Subscription<action_msgs::msg::GoalStatus>::SharedPtr subscription_;
+  unique_identifier_msgs::msg::UUID uuid_msg_;
 };
 
 int main(int argc, char * argv[])

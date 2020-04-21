@@ -19,16 +19,17 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(action_msgs REQUIRED)
 find_package(halodi_msgs REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
 add_executable(drive_command_publisher src/drive_command_publisher.cpp)
-ament_target_dependencies(drive_command_publisher rclcpp std_msgs halodi_msgs)
+ament_target_dependencies(drive_command_publisher rclcpp std_msgs halodi_msgs action_msgs)
 
 add_executable(whole_body_trajectory_publisher src/whole_body_trajectory_publisher.cpp)
-ament_target_dependencies(whole_body_trajectory_publisher rclcpp std_msgs halodi_msgs)
+ament_target_dependencies(whole_body_trajectory_publisher rclcpp std_msgs halodi_msgs action_msgs)
 
 install(TARGETS drive_command_publisher whole_body_trajectory_publisher DESTINATION lib/${PROJECT_NAME})
 
