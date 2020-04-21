@@ -9,6 +9,7 @@ and build again to start using the examples
 ```bash
 cd ~/eve_ws/src
 git clone https://github.com/Halodi/eve-ros2-examples.git
+cd ~/eve_ws
 colcon build
 . install/setup.bash
 ```
