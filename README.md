@@ -1,5 +1,4 @@
 # eve-ros2-examples
-will@halodi.com
 
 A ROS2 package full of C++ examples that show the usage of all of EVE's ROS2 API
 
