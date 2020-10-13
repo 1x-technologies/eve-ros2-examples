@@ -33,7 +33,10 @@ ament_target_dependencies(drive_command_publisher rclcpp std_msgs halodi_msgs ac
 add_executable(whole_body_trajectory_publisher src/whole_body_trajectory_publisher.cpp)
 ament_target_dependencies(whole_body_trajectory_publisher rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-install(TARGETS drive_command_publisher whole_body_trajectory_publisher DESTINATION lib/${PROJECT_NAME})
+add_executable(wave_right_hand_publisher src/wave_right_hand_publisher.cpp)
+ament_target_dependencies(wave_right_hand_publisher rclcpp halodi_msgs action_msgs)
+
+install(TARGETS drive_command_publisher whole_body_trajectory_publisher wave_right_hand_publisher DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
