@@ -44,7 +44,7 @@ public:
   }
 
 private:
-  void topic_callback(const action_msgs::msg::GoalStatus::SharedPtr msg) const
+  void topic_callback(action_msgs::msg::GoalStatus::SharedPtr msg)
   {
     switch(msg->status){
       case 1:
@@ -68,7 +68,7 @@ private:
 
   }
 
-  unique_identifier_msgs::msg::UUID create_random_uuid() const
+  unique_identifier_msgs::msg::UUID create_random_uuid()
   {
     //Create a random uuid to track msgs
     boost::uuids::random_generator gen; boost::uuids::uuid u = gen();
@@ -78,7 +78,7 @@ private:
     return uuid_msg;
   }
 
-  void publish_joint_space_trajectory(unique_identifier_msgs::msg::UUID uuid_msg) const
+  void publish_joint_space_trajectory(unique_identifier_msgs::msg::UUID uuid_msg)
   {
     WholeBodyTrajectory trajectory_msg;
     trajectory_msg.append_trajectory = false;
@@ -86,15 +86,24 @@ private:
     trajectory_msg.trajectory_id = uuid_msg;
 
     add_joint_target(&trajectory_msg, 3, target1());
-    add_joint_target(&trajectory_msg, 4, target2());
-    add_joint_target(&trajectory_msg, 5, target3());
+    add_joint_target(&trajectory_msg, 5, target2());
+    add_joint_target(&trajectory_msg, 7, target3());
 
     RCLCPP_INFO(this->get_logger(), "Sending whole_body_trajectory, listening for whole_body_trajectory_status...");
     publisher_->publish(trajectory_msg);
 
   }
 
-  JointSpaceCommand generate_joint_space_command(int32_t joint_id, double q_des, double qd_des = 0.0, double qdd_des = 0.0) const {
+  void add_joint_target(WholeBodyTrajectory * trajectory, int32_t t, WholeBodyTrajectoryPoint joint_target) {
+
+    builtin_interfaces::msg::Duration duration;
+    duration.sec = t;
+    joint_target.time_from_start = duration;
+
+    trajectory->trajectory_points.push_back(joint_target);
+  }
+
+  JointSpaceCommand generate_joint_space_command(int32_t joint_id, double q_des, double qd_des = 0.0, double qdd_des = 0.0) {
     JointSpaceCommand ret_msg;
     JointName name;
     name.joint_id = joint_id;
@@ -106,16 +115,7 @@ private:
     return ret_msg;
   }
 
-  void add_joint_target(WholeBodyTrajectory * trajectory, int32_t t, WholeBodyTrajectoryPoint joint_target) const {
-
-    builtin_interfaces::msg::Duration duration;
-    duration.sec = t;
-    joint_target.time_from_start = duration;
-
-    trajectory->trajectory_points.push_back(joint_target);
-  }
-
-  WholeBodyTrajectoryPoint target1() const {
+  WholeBodyTrajectoryPoint target1() {
     WholeBodyTrajectoryPoint ret_msg;
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_PITCH, -1.9));
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_ROLL, -1.75));
@@ -126,7 +126,7 @@ private:
     return ret_msg;
   }
 
-  WholeBodyTrajectoryPoint target2() const  {
+  WholeBodyTrajectoryPoint target2()  {
     WholeBodyTrajectoryPoint ret_msg;
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_PITCH, -1.9));
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_ROLL, -1.75));
@@ -137,7 +137,7 @@ private:
     return ret_msg;
   }
 
-  WholeBodyTrajectoryPoint target3() const  {
+  WholeBodyTrajectoryPoint target3()  {
     WholeBodyTrajectoryPoint ret_msg;
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_PITCH, -1.9));
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_ROLL, -1.75));
@@ -150,7 +150,7 @@ private:
 
   rclcpp::Publisher<WholeBodyTrajectory>::SharedPtr publisher_;
   rclcpp::Subscription<action_msgs::msg::GoalStatus>::SharedPtr subscription_;
-  mutable unique_identifier_msgs::msg::UUID uuid_msg_;
+  unique_identifier_msgs::msg::UUID uuid_msg_;
 };
 
 int main(int argc, char * argv[])
