@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include <memory>
-#include <boost/math/constants/constants.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include "rclcpp/rclcpp.hpp"
@@ -24,7 +23,6 @@
 #include "halodi_msgs/msg/joint_space_command.hpp"
 #include "halodi_msgs/msg/joint_name.hpp"
 
-using namespace std::chrono_literals;
 using namespace halodi_msgs::msg;
 using std::placeholders::_1;
 
@@ -34,17 +32,19 @@ public:
   Waving_Right_Hand_Publisher()
   : Node("waving_hand_trajectory_publisher")
   {
+    // set up publisher to trajectory topic
     publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
-    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&Waving_Right_Hand_Publisher::topic_callback, this, _1));
 
-    //Send the first trajectory command. The subscriber will send additional commands to loop the same command in the subscriber topic_callback
+    // subscribe to the tractory status topic
+    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&Waving_Right_Hand_Publisher::status_callback, this, _1));
+
+    // send the first trajectory command. The subscriber will send the commands again using the logic in status_callback(msg)
     uuid_msg_ = create_random_uuid();
     publish_joint_space_trajectory(uuid_msg_);
-
   }
 
 private:
-  void topic_callback(action_msgs::msg::GoalStatus::SharedPtr msg)
+  void status_callback(action_msgs::msg::GoalStatus::SharedPtr msg)
   {
     switch(msg->status){
       case 1:
@@ -57,7 +57,6 @@ private:
         RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
         //If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send another command
         if(msg->goal_info.goal_id.uuid==uuid_msg_.uuid){
-          std::cerr << "Yes" << std::endl;
           uuid_msg_ = create_random_uuid();
           publish_joint_space_trajectory(uuid_msg_);
         }
@@ -65,7 +64,6 @@ private:
       default:
         break;
     }
-
   }
 
   unique_identifier_msgs::msg::UUID create_random_uuid()
@@ -80,30 +78,29 @@ private:
 
   void publish_joint_space_trajectory(unique_identifier_msgs::msg::UUID uuid_msg)
   {
+    // begin construction of the publsihed msg
     WholeBodyTrajectory trajectory_msg;
     trajectory_msg.append_trajectory = false;
+    // MINIMUM_JERK_CONSTRAINED mode is recommended to constrain joint 
+    // velocities and accelerations between each waypoint
     trajectory_msg.interpolation_mode.value = TrajectoryInterpolation::MINIMUM_JERK_CONSTRAINED;
     trajectory_msg.trajectory_id = uuid_msg;
 
-    add_joint_target(&trajectory_msg, 3, target1());
-    add_joint_target(&trajectory_msg, 5, target2());
-    add_joint_target(&trajectory_msg, 7, target3());
+    // begin adding waypoint targets, the desired times {2, 4, 6} (ses) are provided in terms of
+    // offset from time at which this published message is received 
+    trajectory_msg.trajectory_points.push_back(target1_(2));
+    trajectory_msg.trajectory_points.push_back(target2_(4));
+    trajectory_msg.trajectory_points.push_back(target3_(6));
 
-    RCLCPP_INFO(this->get_logger(), "Sending whole_body_trajectory, listening for whole_body_trajectory_status...");
+    RCLCPP_INFO(this->get_logger(), "Sending trajectory, listening for whole_body_trajectory_status...");
     publisher_->publish(trajectory_msg);
-
   }
 
-  void add_joint_target(WholeBodyTrajectory * trajectory, int32_t t, WholeBodyTrajectoryPoint joint_target) {
-
-    builtin_interfaces::msg::Duration duration;
-    duration.sec = t;
-    joint_target.time_from_start = duration;
-
-    trajectory->trajectory_points.push_back(joint_target);
-  }
-
-  JointSpaceCommand generate_joint_space_command(int32_t joint_id, double q_des, double qd_des = 0.0, double qdd_des = 0.0) {
+  /*
+  This generates the individual single joint command
+  */
+  JointSpaceCommand generate_joint_space_command(int32_t joint_id, double q_des, double qd_des = 0.0, double qdd_des = 0.0)
+  {
     JointSpaceCommand ret_msg;
     JointName name;
     name.joint_id = joint_id;
@@ -115,8 +112,20 @@ private:
     return ret_msg;
   }
 
-  WholeBodyTrajectoryPoint target1() {
+  /* 
+  Each target, in the form of a single WholeBodyTrajectoryPoint msg, consists of a concatenation of desired joint configurations, 
+  with no more than one desired value per joint.
+  
+  The desired time at which we want to reach these joint targets is also specified.
+  */
+  WholeBodyTrajectoryPoint target1_(int32_t t)
+  {
     WholeBodyTrajectoryPoint ret_msg;
+
+    builtin_interfaces::msg::Duration duration;
+    duration.sec = t;
+    ret_msg.time_from_start = duration;
+
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_PITCH, -1.9));
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_ROLL, -1.75));
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_YAW, 0.9));
@@ -126,8 +135,14 @@ private:
     return ret_msg;
   }
 
-  WholeBodyTrajectoryPoint target2()  {
+  WholeBodyTrajectoryPoint target2_(int32_t t)
+  {
     WholeBodyTrajectoryPoint ret_msg;
+
+    builtin_interfaces::msg::Duration duration;
+    duration.sec = t;
+    ret_msg.time_from_start = duration;
+
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_PITCH, -1.9));
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_ROLL, -1.75));
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_YAW, 0.9));
@@ -137,8 +152,14 @@ private:
     return ret_msg;
   }
 
-  WholeBodyTrajectoryPoint target3()  {
+  WholeBodyTrajectoryPoint target3_(int32_t t)
+  {
     WholeBodyTrajectoryPoint ret_msg;
+
+    builtin_interfaces::msg::Duration duration;
+    duration.sec = t;
+    ret_msg.time_from_start = duration;
+
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_PITCH, -1.9));
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_ROLL, -1.75));
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_SHOULDER_YAW, 0.9));

@@ -25,30 +25,26 @@ The EVE ROS2 API is essentially just the construction and publishing of our cust
 We use the simplest template of a ROS2 node, an explanation for which can be found [here](https://index.ros.org/doc/ros2/Tutorials/Writing-A-Simple-Cpp-Publisher-And-Subscriber/). Although given the simplicity, you should have few problems following this tutorial if you come from a ROS1 only background.
 
 ## Waving the hand
-This example makes EVE wave her right hand using the WholeBody trajectory ROS2 Message.
+This example makes EVE wave her right hand using the Whole-body trajectory ROS2 Message.
 
 The WholeBodyTrajectory msg is composed of a sequence of WholeBodyTrajectoryPoint(s) (3 in this case). Each WholeBodyTrajectoryPoint can be composed of desired task space commands, eg. desired end-effector positions, and/or desired joint space commands, eg. arm or leg joint angles, along with a desired time to get there.
 
-This examples results in EVE waving her right hand via a sequence of joint space commands only.
+This examples results in EVE waving her right hand using a sequence of joint space commands only.
 
  Run the example using the following:
 ```bash
-ros2 run eve-ros2-examples wave_right_hand_publisher
+ros2 run eve-ros2-examples wave_right_hand
 ```
-You can find the code for this example in [whole_body_trajectory_publisher.cpp](./src/whole_body_trajectory_publisher.cpp)
-
 
 ## Driving Command Example
 This example makes EVE drive in a circle using the DrivingCommand ROS2 Message. Run the example using the following:
 ```bash
 ros2 run eve-ros2-examples drive_command_publisher
 ```
-You can find the code for this example in [drive_command_publisher.cpp](./src/drive_command_publisher.cpp)
 
 ## Wholebody Trajectory Example
 This example makes EVE move her right hand in a 5 point trajectory using the WholeBody trajectory ROS2 Message. Run the example using the following:
 ```bash
 ros2 run eve-ros2-examples whole_body_trajectory_publisher
 ```
-You can find the code for this example in [whole_body_trajectory_publisher.cpp](./src/whole_body_trajectory_publisher.cpp)
 
