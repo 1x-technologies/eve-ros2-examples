@@ -29,11 +29,19 @@ This example makes EVE wave her right hand using the Whole-body trajectory ROS2 
 
 The WholeBodyTrajectory msg is composed of a sequence of WholeBodyTrajectoryPoint(s) (3 in this case). Each WholeBodyTrajectoryPoint can be composed of desired task space commands, eg. desired end-effector positions, and/or desired joint space commands, eg. arm or leg joint angles, along with a desired time to get there.
 
-This examples results in EVE waving her right hand using a sequence of joint space commands only.
+This examples results in EVE waving her right hand using a sequence of joint space commands only. The trajectory is repeated until the node is terminated after which EVE will remain in the final configuration specified in the trajectory message.
 
- Run the example using the following:
+Run the example using the following:
 ```bash
 ros2 run eve-ros2-examples wave_right_hand
+```
+
+## Return to default
+In the previous example, EVE remains in final pose specified in the published trajectory. This node resets EVE to the default pose by publishing once a WholeBodyTrajectory msg composed of default arm joint positions and a default pelvis pose. The node terminates after the desired pose is reached.
+
+Run it using the following;
+```bash
+ros2 run eve-ros2-examples go_to_default
 ```
 
 ## Driving Command Example
