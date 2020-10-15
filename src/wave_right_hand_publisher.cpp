@@ -26,21 +26,21 @@
 using namespace halodi_msgs::msg;
 using std::placeholders::_1;
 
-class Waving_Right_Hand_Publisher : public rclcpp::Node
+class WavingRightHandPublisher : public rclcpp::Node
 {
 public:
-  Waving_Right_Hand_Publisher()
+  WavingRightHandPublisher()
   : Node("waving_hand_trajectory_publisher")
   {
     // set up publisher to trajectory topic
     publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
 
     // subscribe to the tractory status topic
-    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&Waving_Right_Hand_Publisher::status_callback, this, _1));
+    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&WavingRightHandPublisher::status_callback, this, _1));
 
     // send the first trajectory command. The subscriber will send the commands again using the logic in status_callback(msg)
     uuid_msg_ = create_random_uuid();
-    publish_joint_space_trajectory(uuid_msg_);
+    publish_trajectory(uuid_msg_);
   }
 
 private:
@@ -58,7 +58,7 @@ private:
         //If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send another command
         if(msg->goal_info.goal_id.uuid==uuid_msg_.uuid){
           uuid_msg_ = create_random_uuid();
-          publish_joint_space_trajectory(uuid_msg_);
+          publish_trajectory(uuid_msg_);
         }
         break;
       default:
@@ -76,7 +76,7 @@ private:
     return uuid_msg;
   }
 
-  void publish_joint_space_trajectory(unique_identifier_msgs::msg::UUID uuid_msg)
+  void publish_trajectory(unique_identifier_msgs::msg::UUID uuid_msg)
   {
     // begin construction of the publsihed msg
     WholeBodyTrajectory trajectory_msg;
@@ -177,7 +177,7 @@ private:
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<Waving_Right_Hand_Publisher>());
+  rclcpp::spin(std::make_shared<WavingRightHandPublisher>());
   rclcpp::shutdown();
   return 0;
 }

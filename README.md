@@ -44,15 +44,15 @@ Run it using the following;
 ros2 run eve-ros2-examples go_to_default
 ```
 
+## Move Left Hand with Task Space Example
+This example makes EVE move her left hand in a 5 point trajectory using the WholeBody trajectory ROS2 Message composed of TaskSpaceCommand msgs.
+Run the example using the following:
+```bash
+ros2 run eve-ros2-examples move_left_hand
+```
+
 ## Driving Command Example
 This example makes EVE drive in a circle using the DrivingCommand ROS2 Message. Run the example using the following:
 ```bash
-ros2 run eve-ros2-examples drive_command_publisher
+ros2 run eve-ros2-examples drive_in_circle
 ```
-
-## Wholebody Trajectory Example
-This example makes EVE move her right hand in a 5 point trajectory using the WholeBody trajectory ROS2 Message. Run the example using the following:
-```bash
-ros2 run eve-ros2-examples whole_body_trajectory_publisher
-```
-

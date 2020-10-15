@@ -37,23 +37,23 @@ using namespace std::chrono_literals;
 using namespace halodi_msgs::msg;
 using std::placeholders::_1;
 
-class WholeBodyTrajectoryPublisher : public rclcpp::Node
+class TaskSpaceTrajectoryPublisher : public rclcpp::Node
 {
 public:
-  WholeBodyTrajectoryPublisher()
-  : Node("whole_body_trajectory_publisher")
+  TaskSpaceTrajectoryPublisher()
+  : Node("task_space_trajectory_publisher")
   {
     publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
-    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&WholeBodyTrajectoryPublisher::topic_callback, this, _1));
+    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&TaskSpaceTrajectoryPublisher::status_callback, this, _1));
 
-    //Send the first trajectory command. The subscriber will send additional commands to loop the same command in the subscriber topic_callback
+    //Send the first trajectory command. The subscriber will send additional commands to loop the same command in the subscriber status_callback
     uuid_msg_ = create_random_uuid();
-    publish_whole_body_trajectory(uuid_msg_);
+    publish_trajectory(uuid_msg_);
 
   }
 
 private:
-  void topic_callback(const action_msgs::msg::GoalStatus::SharedPtr msg) const
+  void status_callback(const action_msgs::msg::GoalStatus::SharedPtr msg) const
   {
     switch(msg->status){
       case 1:
@@ -67,7 +67,7 @@ private:
         //If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send another command
         if(msg->goal_info.goal_id.uuid==uuid_msg_.uuid){
           uuid_msg_ = create_random_uuid();
-          publish_whole_body_trajectory(uuid_msg_);
+          publish_trajectory(uuid_msg_);
         }
         break;
       default:
@@ -86,7 +86,7 @@ private:
     return uuid_msg;
   }
 
-  void publish_whole_body_trajectory(unique_identifier_msgs::msg::UUID uuid_msg) const
+  void publish_trajectory(unique_identifier_msgs::msg::UUID uuid_msg) const
   {
     WholeBodyTrajectory trajectory_msg;
     trajectory_msg.append_trajectory = false;
@@ -94,13 +94,13 @@ private:
     trajectory_msg.trajectory_id = uuid_msg;
 
     //Add targets for hand motions to pick up a box
-    add_hand_target(&trajectory_msg, 1, 0.25, -0.35, 0.20, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::RIGHT_HAND);
-    add_hand_target(&trajectory_msg, 2, 0.25, -0.35, 0.05, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::RIGHT_HAND);
-    add_hand_target(&trajectory_msg, 3, 0.25, -0.15, 0.05, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::RIGHT_HAND);
-    add_hand_target(&trajectory_msg, 4, 0.25, -0.15, 0.20, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::RIGHT_HAND);
-    add_hand_target(&trajectory_msg, 5, 0.25, -0.35, 0.20, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::RIGHT_HAND);
+    add_hand_target(&trajectory_msg, 1, 0.25, 0.15, 0.20, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 2, 0.25, 0.15, 0.05, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 3, 0.25, 0.35, 0.05, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 4, 0.25, 0.35, 0.20, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 5, 0.25, 0.15, 0.20, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
 
-    RCLCPP_INFO(this->get_logger(), "Sending whole_body_trajectory, listening for whole_body_trajectory_status...");
+    RCLCPP_INFO(this->get_logger(), "Sending trajectory, listening for whole_body_trajectory_status...");
     publisher_->publish(trajectory_msg);
 
   }
@@ -148,7 +148,7 @@ private:
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<WholeBodyTrajectoryPublisher>());
+  rclcpp::spin(std::make_shared<TaskSpaceTrajectoryPublisher>());
   rclcpp::shutdown();
   return 0;
 }

@@ -49,7 +49,7 @@ public:
 
     // send the first trajectory command. The subscriber will send the commands again using the logic in status_callback(msg)
     uuid_msg_ = create_random_uuid();
-    publish_joint_space_trajectory(uuid_msg_);
+    publish_trajectory(uuid_msg_);
   }
 
 private:
@@ -83,7 +83,7 @@ private:
     return uuid_msg;
   }
 
-  void publish_joint_space_trajectory(unique_identifier_msgs::msg::UUID uuid_msg)
+  void publish_trajectory(unique_identifier_msgs::msg::UUID uuid_msg)
   {
     // begin construction of the publsihed msg
     WholeBodyTrajectory trajectory_msg;
