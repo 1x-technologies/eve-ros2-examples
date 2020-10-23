@@ -31,7 +31,7 @@ public:
   : Node("driving_command_publisher"), count_(0)
   {
     publisher_ = this->create_publisher<halodi_msgs::msg::DrivingCommand>("/eve/driving_command", 10);
-    timer_ = this->create_wall_timer(500ms, std::bind(&DrivingCommandPublisher::timer_callback, this));
+    timer_ = this->create_wall_timer(200ms, std::bind(&DrivingCommandPublisher::timer_callback, this));
   }
 
 private:
