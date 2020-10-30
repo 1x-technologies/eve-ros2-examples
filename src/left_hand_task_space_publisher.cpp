@@ -94,11 +94,11 @@ private:
     trajectory_msg.trajectory_id = uuid_msg;
 
     //Add targets for hand motions to pick up a box
-    add_hand_target(&trajectory_msg, 1, 0.25, 0.15, 0.20, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
-    add_hand_target(&trajectory_msg, 2, 0.25, 0.15, 0.05, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
-    add_hand_target(&trajectory_msg, 3, 0.25, 0.35, 0.05, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
-    add_hand_target(&trajectory_msg, 4, 0.25, 0.35, 0.20, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
-    add_hand_target(&trajectory_msg, 5, 0.25, 0.15, 0.20, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 1, 0.25, 0.15, 0.25, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 2, 0.25, 0.15, 0.0,  0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 3, 0.25, 0.4,  0.0,  0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 4, 0.25, 0.4,  0.25, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 5, 0.25, 0.15, 0.25, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
 
     RCLCPP_INFO(this->get_logger(), "Sending trajectory, listening for whole_body_trajectory_status...");
     publisher_->publish(trajectory_msg);
