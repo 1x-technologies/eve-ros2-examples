@@ -42,10 +42,7 @@ ament_target_dependencies(go_to_default rclcpp halodi_msgs action_msgs tf2 tf2_g
 add_executable(go_wild src/go_wild_publisher.cpp)
 ament_target_dependencies(go_wild rclcpp halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-#add_executable(null_space_demo src/nullspace_left_hand_task_space_publisher.cpp)
-#ament_target_dependencies(null_space_demo rclcpp halodi_msgs action_msgs tf2 tf2_geometry_msgs)
-
-install(TARGETS drive_in_circle move_left_hand wave_right_hand go_to_default go_wild null_space_demo DESTINATION lib/${PROJECT_NAME})
+install(TARGETS drive_in_circle move_left_hand wave_right_hand go_to_default go_wild DESTINATION lib/${PROJECT_NAME})
 
 #install(DIRECTORY launch rviz
 #        DESTINATION share/${PROJECT_NAME}
