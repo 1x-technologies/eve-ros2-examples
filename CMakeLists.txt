@@ -27,13 +27,26 @@ find_package(tf2_geometry_msgs REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-add_executable(drive_command_publisher src/drive_command_publisher.cpp)
-ament_target_dependencies(drive_command_publisher rclcpp std_msgs halodi_msgs action_msgs)
+add_executable(drive_in_circle src/drive_command_publisher.cpp)
+ament_target_dependencies(drive_in_circle rclcpp std_msgs halodi_msgs action_msgs)
 
-add_executable(whole_body_trajectory_publisher src/whole_body_trajectory_publisher.cpp)
-ament_target_dependencies(whole_body_trajectory_publisher rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+add_executable(move_left_hand src/left_hand_task_space_publisher.cpp)
+ament_target_dependencies(move_left_hand rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-install(TARGETS drive_command_publisher whole_body_trajectory_publisher DESTINATION lib/${PROJECT_NAME})
+add_executable(wave_right_hand src/wave_right_hand_publisher.cpp)
+ament_target_dependencies(wave_right_hand rclcpp halodi_msgs action_msgs)
+
+add_executable(go_to_default src/default_pose_publisher.cpp)
+ament_target_dependencies(go_to_default rclcpp halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+
+add_executable(go_wild src/go_wild_publisher.cpp)
+ament_target_dependencies(go_wild rclcpp halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+
+install(TARGETS drive_in_circle move_left_hand wave_right_hand go_to_default go_wild DESTINATION lib/${PROJECT_NAME})
+
+#install(DIRECTORY launch rviz
+#        DESTINATION share/${PROJECT_NAME}
+#        )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
