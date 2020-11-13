@@ -93,19 +93,22 @@ private:
     trajectory_msg.interpolation_mode.value = TrajectoryInterpolation::MINIMUM_JERK_CONSTRAINED;
     trajectory_msg.trajectory_id = uuid_msg;
 
+    // neck limits2
+
     //Add targets for hand motions to pick up a box
-    add_hand_target(&trajectory_msg, 1, 0.25, 0.15, 0.25, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
-    add_hand_target(&trajectory_msg, 2, 0.25, 0.15, 0.0,  0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
-    add_hand_target(&trajectory_msg, 3, 0.25, 0.4,  0.0,  0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
-    add_hand_target(&trajectory_msg, 4, 0.25, 0.4,  0.25, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
-    add_hand_target(&trajectory_msg, 5, 0.25, 0.15, 0.25, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_and_neck_target(&trajectory_msg, 1, 0.25, 0.1, 0.7, 0.0, -pi_/2.0,  -pi_/4.0, ReferenceFrameName::LEFT_HAND, 0.5);
+    add_hand_and_neck_target(&trajectory_msg, 2, 0.45, 0.2, 0.6,  0.0, -pi_/2.0, -pi_/3.0, ReferenceFrameName::LEFT_HAND, 0.4);
+    add_hand_and_neck_target(&trajectory_msg, 3, 0.45, 0.3, 0.4,  0.0, -pi_/2.0, -pi_/2.0, ReferenceFrameName::LEFT_HAND, 0.3);
+    add_hand_and_neck_target(&trajectory_msg, 4, 0.35, 0.3, 0.6, 0.0, -pi_/2.0,  -pi_/3.0, ReferenceFrameName::LEFT_HAND, 0.2);
+    add_hand_and_neck_target(&trajectory_msg, 5, 0.35, 0.2, 0.65, 0.0, -pi_/2.0, -pi_/4.0, ReferenceFrameName::LEFT_HAND, 0.3);
+    add_hand_and_neck_target(&trajectory_msg, 6, 0.25, 0.1, 0.7, 0.0, -pi_/2.0,  -pi_/4.0, ReferenceFrameName::LEFT_HAND, 0.4);
 
     RCLCPP_INFO(this->get_logger(), "Sending trajectory, listening for whole_body_trajectory_status...");
     publisher_->publish(trajectory_msg);
 
   }
 
-  void add_hand_target(WholeBodyTrajectory * trajectory, int32_t t, double x, double y, double z, double yaw, double pitch, double roll, ReferenceFrameName::_frame_id_type frame) const
+  void add_hand_and_neck_target(WholeBodyTrajectory * trajectory, int32_t t, double x, double y, double z, double yaw, double pitch, double roll, ReferenceFrameName::_frame_id_type frame, double neck_angle) const
   {
     WholeBodyTrajectoryPoint target;
     TaskSpaceCommand hand_command;
@@ -136,8 +139,28 @@ private:
 
     //Add the hand command to the list of targets, add the target list to the trajectory points
     target.task_space_commands.push_back(hand_command);
+
+    //Add neck angle target
+    target.joint_space_commands.push_back(generate_joint_space_command(JointName::NECK_PITCH, neck_angle));
+
     trajectory->trajectory_points.push_back(target);
   }
+
+  /*
+  This generates the individual single joint command
+  */
+  JointSpaceCommand generate_joint_space_command(int32_t joint_id, double q_des, double qd_des = 0.0, double qdd_des = 0.0) const
+  {
+    JointSpaceCommand ret_msg;
+    JointName name;
+    name.joint_id = joint_id;
+    ret_msg.joint = name;
+    ret_msg.q_desired = q_des;
+    ret_msg.qd_desired = qd_des;
+    ret_msg.qdd_desired = qdd_des;
+    ret_msg.use_default_gains = true;
+    return ret_msg;
+  }  
 
   const double pi_ = boost::math::constants::pi<double>();
   rclcpp::Publisher<WholeBodyTrajectory>::SharedPtr publisher_;
