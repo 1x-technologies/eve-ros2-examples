@@ -38,7 +38,7 @@ private:
   void timer_callback()
   {
     auto message = halodi_msgs::msg::DrivingCommand();
-    message.filter_driving_commmand = false;
+    message.filter_driving_command = false;
     message.linear_velocity = 1.0;
     message.angular_velocity = 3.0;
     RCLCPP_INFO(this->get_logger(), "DrivingCommand: linear_velocity: '%f', angular_velocity: '%f'", message.linear_velocity, message.angular_velocity);
