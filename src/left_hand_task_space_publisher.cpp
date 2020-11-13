@@ -93,7 +93,7 @@ private:
     trajectory_msg.interpolation_mode.value = TrajectoryInterpolation::MINIMUM_JERK_CONSTRAINED;
     trajectory_msg.trajectory_id = uuid_msg;
 
-    // neck limits2
+    // neck limits lower="-0.335" upper="0.506" 
 
     //Add targets for hand motions to pick up a box
     add_hand_and_neck_target(&trajectory_msg, 2, 0.45, 0.1, 0.7, 0.0, -pi_/2.0,  -pi_/3.5, ReferenceFrameName::LEFT_HAND, 0.5);
@@ -101,7 +101,7 @@ private:
     add_hand_and_neck_target(&trajectory_msg, 4, 0.65, 0.3, 0.4,  0.0, -pi_/2.0, -pi_/2.0, ReferenceFrameName::LEFT_HAND, 0.3);
     add_hand_and_neck_target(&trajectory_msg, 5, 0.55, 0.3, 0.6, 0.0, -pi_/2.0,  -pi_/3.0, ReferenceFrameName::LEFT_HAND, 0.2);
     add_hand_and_neck_target(&trajectory_msg, 6, 0.45, 0.2, 0.65, 0.0, -pi_/2.0, -pi_/3.5, ReferenceFrameName::LEFT_HAND, 0.3);
-    add_hand_and_neck_target(&trajectory_msg, 7, 0.45, 0.1, 0.55, 0.0, -pi_/2.0,  -pi_/3.5, ReferenceFrameName::LEFT_HAND, 0.5);
+    add_hand_and_neck_target(&trajectory_msg, 7, 0.45, 0.1, 0.55, 0.0, -pi_/2.0,  -pi_/3.5, ReferenceFrameName::LEFT_HAND, 0.15);
 
     RCLCPP_INFO(this->get_logger(), "Sending trajectory, listening for whole_body_trajectory_status...");
     publisher_->publish(trajectory_msg);
