@@ -1,4 +1,4 @@
-// CopyLEFT 2016 Open Source Robotics Foundation, Inc.
+// Copyright 2016 Open Source Robotics Foundation, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,14 +37,14 @@ using namespace std::chrono_literals;
 using namespace halodi_msgs::msg;
 using std::placeholders::_1;
 
-class CameraCalibrationTrajectoryPublisher : public rclcpp::Node
+class TaskSpaceTrajectoryPublisher : public rclcpp::Node
 {
 public:
-  CameraCalibrationTrajectoryPublisher()
-  : Node("camera_calibration_trajectory_publisher")
+  TaskSpaceTrajectoryPublisher()
+  : Node("task_space_trajectory_publisher")
   {
     publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
-    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&CameraCalibrationTrajectoryPublisher::status_callback, this, _1));
+    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&TaskSpaceTrajectoryPublisher::status_callback, this, _1));
 
     //Send the first trajectory command. The subscriber will send additional commands to loop the same command in the subscriber status_callback
     uuid_msg_ = create_random_uuid();
@@ -93,22 +93,19 @@ private:
     trajectory_msg.interpolation_mode.value = TrajectoryInterpolation::MINIMUM_JERK_CONSTRAINED;
     trajectory_msg.trajectory_id = uuid_msg;
 
-    // neck limits lower="-0.335" upper="0.506" 
-
     //Add targets for hand motions to pick up a box
-    add_hand_and_neck_target(&trajectory_msg, 2, 0.45, -0.1, 0.7,  0.0,  -pi_/2.0,  -pi_/3.5, ReferenceFrameName::LEFT_HAND, 0.3);
-    add_hand_and_neck_target(&trajectory_msg, 3, 0.55, -0.2, 0.6,  0.0,  -pi_/2.0,  -pi_/3.0, ReferenceFrameName::LEFT_HAND, 0.4);
-    add_hand_and_neck_target(&trajectory_msg, 4, 0.65, -0.3, 0.4,  0.0,  -pi_/2.0,  -pi_/2.0, ReferenceFrameName::LEFT_HAND, 0.3);
-    add_hand_and_neck_target(&trajectory_msg, 5, 0.55, -0.3, 0.6,  0.0,  -pi_/2.0,  -pi_/3.0, ReferenceFrameName::LEFT_HAND, 0.2);
-    add_hand_and_neck_target(&trajectory_msg, 6, 0.45, -0.2, 0.55, 0.0,  -pi_/2.0,  -pi_/3.5, ReferenceFrameName::LEFT_HAND, 0.2);
-    add_hand_and_neck_target(&trajectory_msg, 7, 0.45, -0.1, 0.45, 0.0,  -pi_/2.0,  -pi_/3.5, ReferenceFrameName::LEFT_HAND, 0.15);
+    add_hand_target(&trajectory_msg, 1, 0.25, 0.15, 0.25, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 2, 0.25, 0.15, 0.0,  0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 3, 0.25, 0.4,  0.0,  0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 4, 0.25, 0.4,  0.25, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
+    add_hand_target(&trajectory_msg, 5, 0.25, 0.15, 0.25, 0.0, -pi_/2.0, 0.0, ReferenceFrameName::LEFT_HAND);
 
     RCLCPP_INFO(this->get_logger(), "Sending trajectory, listening for whole_body_trajectory_status...");
     publisher_->publish(trajectory_msg);
 
   }
 
-  void add_hand_and_neck_target(WholeBodyTrajectory * trajectory, int32_t t, double x, double y, double z, double yaw, double pitch, double roll, ReferenceFrameName::_frame_id_type frame, double neck_angle) const
+  void add_hand_target(WholeBodyTrajectory * trajectory, int32_t t, double x, double y, double z, double yaw, double pitch, double roll, ReferenceFrameName::_frame_id_type frame) const
   {
     WholeBodyTrajectoryPoint target;
     TaskSpaceCommand hand_command;
@@ -139,28 +136,8 @@ private:
 
     //Add the hand command to the list of targets, add the target list to the trajectory points
     target.task_space_commands.push_back(hand_command);
-
-    //Add neck angle target
-    target.joint_space_commands.push_back(generate_joint_space_command(JointName::NECK_PITCH, neck_angle));
-
     trajectory->trajectory_points.push_back(target);
   }
-
-  /*
-  This generates the individual single joint command
-  */
-  JointSpaceCommand generate_joint_space_command(int32_t joint_id, double q_des, double qd_des = 0.0, double qdd_des = 0.0) const
-  {
-    JointSpaceCommand ret_msg;
-    JointName name;
-    name.joint_id = joint_id;
-    ret_msg.joint = name;
-    ret_msg.q_desired = q_des;
-    ret_msg.qd_desired = qd_des;
-    ret_msg.qdd_desired = qdd_des;
-    ret_msg.use_default_gains = true;
-    return ret_msg;
-  }  
 
   const double pi_ = boost::math::constants::pi<double>();
   rclcpp::Publisher<WholeBodyTrajectory>::SharedPtr publisher_;
@@ -171,7 +148,7 @@ private:
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<CameraCalibrationTrajectoryPublisher>());
+  rclcpp::spin(std::make_shared<TaskSpaceTrajectoryPublisher>());
   rclcpp::shutdown();
   return 0;
 }

@@ -45,6 +45,9 @@ ament_target_dependencies(go_wild rclcpp halodi_msgs action_msgs tf2 tf2_geometr
 add_executable(camera_calib_left src/camera_calibration_trajectory_left_hand.cpp)
 ament_target_dependencies(camera_calib_left rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
+add_executable(camera_calib_right src/camera_calibration_trajectory_right_hand.cpp)
+ament_target_dependencies(camera_calib_right rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+
 add_executable(neck_up_down src/neck_up_down_trajectory.cpp)
 ament_target_dependencies(neck_up_down rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
