@@ -88,7 +88,7 @@ private:
     // begin construction of the publsihed msg
     WholeBodyTrajectory trajectory_msg;
     trajectory_msg.append_trajectory = false;
-    // MINIMUM_JERK_CONSTRAINED mode is recommended to constrain joint 
+    // MINIMUM_JERK_CONSTRAINED mode is recommended to constrain joint
     // velocities and accelerations between each waypoint
     trajectory_msg.interpolation_mode.value = TrajectoryInterpolation::MINIMUM_JERK_CONSTRAINED;
     trajectory_msg.trajectory_id = uuid_msg;
@@ -141,12 +141,12 @@ private:
     ret_msg.pose = pose;
 
     return ret_msg;
-  } 
+  }
 
-  /* 
-  The target, in the form of a single WholeBodyTrajectoryPoint msg, consists of a concatenation of a desired pelvis pose (Task Space) and desired joint configurations for the arms, 
+  /*
+  The target, in the form of a single WholeBodyTrajectoryPoint msg, consists of a concatenation of a desired pelvis pose (Task Space) and desired joint configurations for the arms,
   with no more than one desired value per joint.
-  
+
   The desired time at which we want to reach the target is also specified.
   */
   WholeBodyTrajectoryPoint default_target_(int32_t t)
@@ -161,7 +161,7 @@ private:
     // In this example we express a desired pelvis pose (the 'floating base'), relative to the frame at the centre of the wheeled base
     // which we generally want to have zero planar offset from when static.
     // The boolean express_in_z_up rotates the expressed_in_frame such that its unit_z axis is aligned with the gravity vector,
-    // for this example this part is only effective if the wheeled base (ReferenceFrameName::BASE) is rested on a slope. 
+    // for this example this part is only effective if the wheeled base (ReferenceFrameName::BASE) is rested on a slope.
     //
     // For more info on the TaskSpaceCommand msgs check out "halodi-messages/halodi_msgs/msg/TaskSpaceCommand.idl"
     ret_msg.task_space_commands.push_back(generate_task_space_command(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE, true, 0.0, 0.0, 0.91));
@@ -181,7 +181,7 @@ private:
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_ELBOW_YAW, 0.0));
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_WRIST_PITCH, 0.2));
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::RIGHT_WRIST_ROLL, 0.0));
-    
+
     ret_msg.joint_space_commands.push_back(generate_joint_space_command(JointName::NECK_PITCH, 0.0));
 
     return ret_msg;
