@@ -39,9 +39,6 @@ ament_target_dependencies(wave_right_hand rclcpp halodi_msgs action_msgs)
 add_executable(go_to_default src/default_pose_publisher.cpp)
 ament_target_dependencies(go_to_default rclcpp halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-add_executable(go_wild src/go_wild_publisher.cpp)
-ament_target_dependencies(go_wild rclcpp halodi_msgs action_msgs tf2 tf2_geometry_msgs)
-
 add_executable(camera_calib_left src/camera_calibration_trajectory_left_hand.cpp)
 ament_target_dependencies(camera_calib_left rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
@@ -51,7 +48,7 @@ ament_target_dependencies(camera_calib_right rclcpp std_msgs halodi_msgs action_
 add_executable(neck_up_down src/neck_up_down_trajectory.cpp)
 ament_target_dependencies(neck_up_down rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-install(TARGETS drive_in_circle move_left_hand wave_right_hand go_to_default go_wild neck_up_down camera_calib_left DESTINATION lib/${PROJECT_NAME})
+install(TARGETS drive_in_circle move_left_hand wave_right_hand go_to_default neck_up_down camera_calib_left camera_calib_right DESTINATION lib/${PROJECT_NAME})
 
 #install(DIRECTORY launch rviz
 #        DESTINATION share/${PROJECT_NAME}
