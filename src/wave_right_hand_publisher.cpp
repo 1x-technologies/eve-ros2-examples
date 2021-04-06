@@ -54,8 +54,6 @@ private:
 
   void timer_callback()
   {
-    // Cancel timer to make this a single shot timer.
-      timer_->cancel();
       RCLCPP_INFO(this->get_logger(), "Triggered timer...");
 
       // send the first trajectory command. The subscriber will send the commands again using the logic in status_callback(msg)
@@ -66,6 +64,11 @@ private:
 
   void status_callback(action_msgs::msg::GoalStatus::SharedPtr msg)
   {
+
+      // The message has been received. We can cancel the timer now and republish based on the subscriber
+      timer_->cancel();
+
+
     switch(msg->status){
       case 1:
         RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
