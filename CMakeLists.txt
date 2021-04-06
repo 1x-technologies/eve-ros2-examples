@@ -60,9 +60,11 @@ ament_target_dependencies(go_wild rclcpp std_msgs halodi_msgs action_msgs tf2 tf
 add_executable(yaw_pivot src/yaw_and_pivot.cpp)
 ament_target_dependencies(yaw_pivot rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
+add_executable(random_walk src/random_walk.cpp)
+ament_target_dependencies(random_walk rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
 #install(TARGETS drive_in_circle move_left_hand wave_right_hand go_to_default neck_up_down camera_calib_left camera_calib_right DESTINATION lib/${PROJECT_NAME})
-install(TARGETS go_wild wave_right_hand go_to_default yaw_pivot  DESTINATION lib/${PROJECT_NAME})
+install(TARGETS random_walk go_wild wave_right_hand go_to_default yaw_pivot  DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
