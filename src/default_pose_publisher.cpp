@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "rclcpp/rclcpp.hpp"
+
 #include "action_msgs/msg/goal_status.hpp"
 #include "eve_ros2_examples/utils.h"
 
@@ -29,8 +30,16 @@ public:
   DefaultPosePublisher()
   : Node("default_pose_publisher")
   {
+
+
+
+      // Create a latching QoS to make sure the first message arrives at the trajectory manager
+    rclcpp::QoS latching_qos(10);
+    latching_qos.transient_local();
+
+
     // set up publisher to trajectory topic
-    publisher_ = this->create_publisher<halodi_msgs::msg::WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
+    publisher_ = this->create_publisher<halodi_msgs::msg::WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&DefaultPosePublisher::status_callback, this, _1));
@@ -41,6 +50,16 @@ public:
   }
 
 private:
+
+
+  void timer_callback()
+  {
+      // send the first trajectory command. The subscriber will send the commands again using the logic in status_callback(msg)
+      uuid_msg_ = create_random_uuid();
+      publish_trajectory(uuid_msg_);
+
+  }
+
   void status_callback(action_msgs::msg::GoalStatus::SharedPtr msg)
   {
     switch(msg->status){

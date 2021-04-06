@@ -44,7 +44,7 @@ public:
 
 
     // Send the first message after 100ms in a timer callback. Publishing in the constructor is not reliable.
-    timer_ = this->create_wall_timer(500ms, std::bind(&WavingRightHandPublisher::timer_callback, this));
+    timer_ = this->create_wall_timer(100ms, std::bind(&WavingRightHandPublisher::timer_callback, this));
 
 
   }
