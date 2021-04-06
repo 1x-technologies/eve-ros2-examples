@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(eve-ros2-examples)
+project(eve_ros2_examples)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -27,6 +27,11 @@ find_package(tf2_geometry_msgs REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
+include_directories(
+  include
+  ${Boost_INCLUDE_DIRS}
+)
+
 add_executable(drive_in_circle src/drive_command_publisher.cpp)
 ament_target_dependencies(drive_in_circle rclcpp std_msgs halodi_msgs action_msgs)
 
@@ -48,11 +53,17 @@ ament_target_dependencies(camera_calib_right rclcpp std_msgs halodi_msgs action_
 add_executable(neck_up_down src/neck_up_down_trajectory.cpp)
 ament_target_dependencies(neck_up_down rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-install(TARGETS drive_in_circle move_left_hand wave_right_hand go_to_default neck_up_down camera_calib_left camera_calib_right DESTINATION lib/${PROJECT_NAME})
+add_executable(go_wild src/go_wild.cpp)
+ament_target_dependencies(go_wild rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-#install(DIRECTORY launch rviz
-#        DESTINATION share/${PROJECT_NAME}
-#        )
+
+add_executable(yaw_pivot src/yaw_and_pivot.cpp)
+ament_target_dependencies(yaw_pivot rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+
+add_executable(random_walk src/random_walk.cpp)
+ament_target_dependencies(random_walk rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+
+install(TARGETS random_walk go_wild drive_in_circle move_left_hand wave_right_hand go_to_default neck_up_down camera_calib_left camera_calib_right yaw_pivot  DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

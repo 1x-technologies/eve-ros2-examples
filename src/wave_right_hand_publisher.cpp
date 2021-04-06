@@ -32,8 +32,14 @@ public:
   WavingRightHandPublisher()
   : Node("waving_hand_trajectory_publisher")
   {
+
+      // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when publish_trajectory is called the first time.
+      // Note: If the trajectory manager starts after this node, it'll execute immediatly.
+      rclcpp::QoS latching_qos(1);
+      latching_qos.transient_local();
+
     // set up publisher to trajectory topic
-    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
+    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&WavingRightHandPublisher::status_callback, this, _1));
@@ -81,13 +87,13 @@ private:
     // begin construction of the publsihed msg
     WholeBodyTrajectory trajectory_msg;
     trajectory_msg.append_trajectory = false;
-    // MINIMUM_JERK_CONSTRAINED mode is recommended to constrain joint 
+    // MINIMUM_JERK_CONSTRAINED mode is recommended to constrain joint
     // velocities and accelerations between each waypoint
     trajectory_msg.interpolation_mode.value = TrajectoryInterpolation::MINIMUM_JERK_CONSTRAINED;
     trajectory_msg.trajectory_id = uuid_msg;
 
     // begin adding waypoint targets, the desired times {2, 4, 6} (ses) are provided in terms of
-    // offset from time at which this published message is received 
+    // offset from time at which this published message is received
     trajectory_msg.trajectory_points.push_back(target1_(2));
     trajectory_msg.trajectory_points.push_back(target2_(4));
     trajectory_msg.trajectory_points.push_back(target3_(6));
@@ -112,10 +118,10 @@ private:
     return ret_msg;
   }
 
-  /* 
-  Each target, in the form of a single WholeBodyTrajectoryPoint msg, consists of a concatenation of desired joint configurations, 
+  /*
+  Each target, in the form of a single WholeBodyTrajectoryPoint msg, consists of a concatenation of desired joint configurations,
   with no more than one desired value per joint.
-  
+
   The desired time at which we want to reach these joint targets is also specified.
   */
   WholeBodyTrajectoryPoint target1_(int32_t t)

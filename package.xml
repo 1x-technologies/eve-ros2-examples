@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>eve-ros2-examples</name>
+  <name>eve_ros2_examples</name>
   <version>1.0.0</version>
   <description>A package full of examples that show the usage of all of EVE's ROS2 API</description>
   <author email="will@halodi.com">Will Rifenburgh</author>
