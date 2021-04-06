@@ -28,7 +28,7 @@ using halodi_msgs::msg::JointName;
 using halodi_msgs::msg::WholeBodyTrajectoryPoint;
 
 const int TIME_INCREMENT_ = 3;
-const int NUM_TARGETS = 5;
+const int NUM_TARGETS = 10;
 
 
 class RandomWalk : public rclcpp::Node
@@ -46,6 +46,7 @@ public:
     // send the first trajectory command. The subscriber will send the commands again using the logic in status_callback(msg)
     uuid_msg_ = create_random_uuid();
 
+    gen_random_numbers();
     publish_trajectory(uuid_msg_);
 
 
@@ -66,6 +67,7 @@ private:
         //If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send another command
         if(msg->goal_info.goal_id.uuid==uuid_msg_.uuid){
           uuid_msg_ = create_random_uuid();
+          // gen_random_numbers();
           publish_trajectory(uuid_msg_);
         }
         break;
@@ -111,7 +113,6 @@ private:
 
     // begin adding waypoint targets, the desired times {2, 4, 6} (ses) are provided in terms of
     // offset from time at which this published message is received
-    gen_random_numbers();
     int t = 0;
     for (int i = 0; i < NUM_TARGETS; i++) {
       trajectory_msg.trajectory_points.push_back(gen_target_from_vector(traj_points_[i], t+=4));
