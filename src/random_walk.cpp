@@ -77,7 +77,8 @@ private:
   void gen_random_numbers() {
     std::default_random_engine generator;
     // std::normal_distribution<double> distribution(0.0,0.05);
-    std::uniform_real_distribution<> distribution(-0.1, 0.1);
+    std::uniform_real_distribution<> distribution(-0.2, 0.2);
+    std::uniform_real_distribution<> distribution_ph(-0.05, 0.05);
 
     traj_points_.clear();
     traj_point_default_ = std::vector<double>{0.91, 0.3, 0.0, 0.0, -1.3, 0.0, 0.2, 0.0, 0.3, 0.0, 0.0, -1.3, 0.0, 0.2, 0.0, 0.0};
@@ -88,7 +89,11 @@ private:
       traj_point_temp.clear();
       for (std::vector<double>::size_type j = 0; j < traj_point_default_.size(); j++) {
         // traj_point_temp.push_back(traj_points_[i-1][j] + distribution(generator));
-        traj_point_temp.push_back(traj_points_[0][j] + distribution(generator));
+        if (j==0) { // pelvis height
+          traj_point_temp.push_back(traj_points_[0][j] + distribution_ph(generator));
+        } else {
+          traj_point_temp.push_back(traj_points_[0][j] + distribution(generator));
+        }
       }
       traj_points_.push_back(traj_point_temp);
     }
@@ -111,6 +116,7 @@ private:
     for (int i = 0; i < NUM_TARGETS; i++) {
       trajectory_msg.trajectory_points.push_back(gen_target_from_vector(traj_points_[i], t+=4));
     }
+    trajectory_msg.trajectory_points.push_back(gen_default_target(t+=4));
 
     RCLCPP_INFO(this->get_logger(), "Sending trajectory, listening for whole_body_trajectory_status...");
     publisher_->publish(trajectory_msg);
