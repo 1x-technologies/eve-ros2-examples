@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #include <functional>
+#include <chrono>
+#include <memory>
 
 #include "rclcpp/rclcpp.hpp"
 #include "action_msgs/msg/goal_status.hpp"
@@ -19,6 +21,8 @@
 #include "eve_ros2_examples/utils.h"
 #include "halodi_msgs/msg/joint_name.hpp"
 #include "halodi_msgs/msg/whole_body_trajectory.hpp"
+
+using namespace std::chrono_literals;
 
 namespace eve_ros2_examples {
 
@@ -38,12 +42,28 @@ public:
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&WavingRightHandPublisher::status_callback, this, _1));
 
-    // send the first trajectory command. The subscriber will send the commands again using the logic in status_callback(msg)
-    uuid_msg_ = create_random_uuid();
-    publish_trajectory(uuid_msg_);
+
+    // Send the first message after 100ms in a timer callback. Publishing in the constructor is not reliable.
+    timer_ = this->create_wall_timer(500ms, std::bind(&WavingRightHandPublisher::timer_callback, this));
+
+
   }
 
 private:
+
+
+  void timer_callback()
+  {
+    // Cancel timer to make this a single shot timer.
+      timer_->cancel();
+      RCLCPP_INFO(this->get_logger(), "Triggered timer...");
+
+      // send the first trajectory command. The subscriber will send the commands again using the logic in status_callback(msg)
+      uuid_msg_ = create_random_uuid();
+      publish_trajectory(uuid_msg_);
+
+  }
+
   void status_callback(action_msgs::msg::GoalStatus::SharedPtr msg)
   {
     switch(msg->status){
@@ -146,6 +166,9 @@ private:
   rclcpp::Publisher<halodi_msgs::msg::WholeBodyTrajectory>::SharedPtr publisher_;
   rclcpp::Subscription<action_msgs::msg::GoalStatus>::SharedPtr subscription_;
   unique_identifier_msgs::msg::UUID uuid_msg_;
+
+  rclcpp::TimerBase::SharedPtr timer_;
+
 };
 
 }
