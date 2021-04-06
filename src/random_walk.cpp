@@ -40,7 +40,7 @@ public:
 
       // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when publish_trajectory is called the first time.
       // Note: If the trajectory manager starts after this node, it'll execute immediatly.
-      rclcpp::QoS latching_qos(10);
+      rclcpp::QoS latching_qos(1);
       latching_qos.transient_local();
 
 
