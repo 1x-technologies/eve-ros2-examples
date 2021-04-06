@@ -37,7 +37,12 @@ public:
   TaskSpaceTrajectoryPublisher()
   : Node("task_space_trajectory_publisher")
   {
-    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
+      // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when publish_trajectory is called the first time.
+      // Note: If the trajectory manager starts after this node, it'll execute immediatly.
+      rclcpp::QoS latching_qos(10);
+      latching_qos.transient_local();
+
+    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&TaskSpaceTrajectoryPublisher::status_callback, this, _1));
 
     //Send the first trajectory command. The subscriber will send additional commands to loop the same command in the subscriber status_callback

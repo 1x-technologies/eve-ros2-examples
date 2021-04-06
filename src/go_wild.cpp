@@ -36,8 +36,13 @@ public:
   Go_Wild_Publisher()
   : Node("go_wild_publisher")
   {
+      // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when publish_trajectory is called the first time.
+      // Note: If the trajectory manager starts after this node, it'll execute immediatly.
+      rclcpp::QoS latching_qos(10);
+      latching_qos.transient_local();
+
     // set up publisher to trajectory topic
-    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
+    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&Go_Wild_Publisher::status_callback, this, _1));
