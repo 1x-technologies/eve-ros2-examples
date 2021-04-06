@@ -11,20 +11,20 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include <functional>
 
-#include <memory>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
 #include "rclcpp/rclcpp.hpp"
 #include "action_msgs/msg/goal_status.hpp"
-#include "unique_identifier_msgs/msg/uuid.hpp"
-#include "halodi_msgs/msg/whole_body_trajectory.hpp"
-#include "halodi_msgs/msg/whole_body_trajectory_point.hpp"
-#include "halodi_msgs/msg/joint_space_command.hpp"
-#include "halodi_msgs/msg/joint_name.hpp"
 
-using namespace halodi_msgs::msg;
+#include "eve_ros2_examples/utils.h"
+#include "halodi_msgs/msg/joint_name.hpp"
+#include "halodi_msgs/msg/whole_body_trajectory.hpp"
+
+namespace eve_ros2_examples {
+
 using std::placeholders::_1;
+using halodi_msgs::msg::JointName;
+using halodi_msgs::msg::WholeBodyTrajectoryPoint;
 
 class WavingRightHandPublisher : public rclcpp::Node
 {
@@ -33,7 +33,7 @@ public:
   : Node("waving_hand_trajectory_publisher")
   {
     // set up publisher to trajectory topic
-    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
+    publisher_ = this->create_publisher<halodi_msgs::msg::WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&WavingRightHandPublisher::status_callback, this, _1));
@@ -66,24 +66,14 @@ private:
     }
   }
 
-  unique_identifier_msgs::msg::UUID create_random_uuid()
-  {
-    //Create a random uuid to track msgs
-    boost::uuids::random_generator gen; boost::uuids::uuid u = gen();
-    unique_identifier_msgs::msg::UUID uuid_msg;
-    std::array<uint8_t, 16> uuid; std::copy(std::begin(u.data), std::end(u.data), uuid.begin());
-    uuid_msg.uuid = uuid;
-    return uuid_msg;
-  }
-
   void publish_trajectory(unique_identifier_msgs::msg::UUID uuid_msg)
   {
     // begin construction of the publsihed msg
-    WholeBodyTrajectory trajectory_msg;
+    halodi_msgs::msg::WholeBodyTrajectory trajectory_msg;
     trajectory_msg.append_trajectory = false;
     // MINIMUM_JERK_CONSTRAINED mode is recommended to constrain joint 
     // velocities and accelerations between each waypoint
-    trajectory_msg.interpolation_mode.value = TrajectoryInterpolation::MINIMUM_JERK_CONSTRAINED;
+    trajectory_msg.interpolation_mode.value = halodi_msgs::msg::TrajectoryInterpolation::MINIMUM_JERK_CONSTRAINED;
     trajectory_msg.trajectory_id = uuid_msg;
 
     // begin adding waypoint targets, the desired times {2, 4, 6} (ses) are provided in terms of
@@ -94,22 +84,6 @@ private:
 
     RCLCPP_INFO(this->get_logger(), "Sending trajectory, listening for whole_body_trajectory_status...");
     publisher_->publish(trajectory_msg);
-  }
-
-  /*
-  This generates the individual single joint command
-  */
-  JointSpaceCommand generate_joint_space_command(int32_t joint_id, double q_des, double qd_des = 0.0, double qdd_des = 0.0)
-  {
-    JointSpaceCommand ret_msg;
-    JointName name;
-    name.joint_id = joint_id;
-    ret_msg.joint = name;
-    ret_msg.q_desired = q_des;
-    ret_msg.qd_desired = qd_des;
-    ret_msg.qdd_desired = qdd_des;
-    ret_msg.use_default_gains = true;
-    return ret_msg;
   }
 
   /* 
@@ -169,15 +143,19 @@ private:
     return ret_msg;
   }
 
-  rclcpp::Publisher<WholeBodyTrajectory>::SharedPtr publisher_;
+  rclcpp::Publisher<halodi_msgs::msg::WholeBodyTrajectory>::SharedPtr publisher_;
   rclcpp::Subscription<action_msgs::msg::GoalStatus>::SharedPtr subscription_;
   unique_identifier_msgs::msg::UUID uuid_msg_;
 };
 
+}
+
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<WavingRightHandPublisher>());
+  {
+    rclcpp::spin(std::make_shared<eve_ros2_examples::WavingRightHandPublisher>());
+  }
   rclcpp::shutdown();
   return 0;
 }
