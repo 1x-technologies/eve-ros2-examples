@@ -10,7 +10,11 @@
   <url type="website">https://github.com/Halodi/eve-ros2-examples</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+  
   <depend>rclcpp</depend>
+  <depend>rclpy</depend>
+  
   <depend>std_msgs</depend>
   <depend>action_msgs</depend>
   <depend>halodi_msgs</depend>
