@@ -4,8 +4,8 @@
   <name>eve_ros2_examples</name>
   <version>1.0.0</version>
   <description>A package full of examples that show the usage of all of EVE's ROS2 API</description>
-  <author email="will@halodi.com">Will Rifenburgh</author>
-  <maintainer email="will@halodi.com">Will Rifenburgh</maintainer>
+  <author email="michael@halodi.com">Michael Purcell</author>
+  <maintainer email="michael@halodi.com">Michael Purcellh</maintainer>
   <license>Apache License 2.0</license>
   <url type="website">https://github.com/Halodi/eve-ros2-examples</url>
 
