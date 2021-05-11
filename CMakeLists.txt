@@ -65,12 +65,18 @@ install(PROGRAMS
 if(BUILD_TESTING)
   find_package(ament_cmake_clang_format REQUIRED)
   ament_clang_format(CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../../.clang-format")
-  
+
   find_package(ament_cmake_clang_tidy REQUIRED)
-  ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../../.clang-tidy")
+  # ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../../.clang-tidy")
 
   find_package(ament_cmake_copyright REQUIRED)
-  ament_copyright()  
+  ament_copyright()
+
+  find_package(ament_cmake_cppcheck REQUIRED)
+  ament_cppcheck(LANGUAGE C++)
+
+  find_package(ament_cmake_cpplint REQUIRED)
+  # ament_cpplint()
 endif()
 
 ament_package()

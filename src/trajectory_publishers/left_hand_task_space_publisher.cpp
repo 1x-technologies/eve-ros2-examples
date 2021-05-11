@@ -24,6 +24,7 @@
 #include "geometry_msgs/msg/point.hpp"
 #include "geometry_msgs/msg/pose.hpp"
 #include "geometry_msgs/msg/quaternion.hpp"
+#include "halodi_msgs/msg/task_space_command.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "tf2/LinearMath/Quaternion.h"
@@ -31,7 +32,6 @@
 #include "unique_identifier_msgs/msg/uuid.hpp"
 
 #include "halodi_msgs/msg/reference_frame_name.hpp"
-#include "halodi_msgs/msg/task_space_command.hpp"
 #include "halodi_msgs/msg/trajectory_interpolation.hpp"
 #include "halodi_msgs/msg/whole_body_trajectory.hpp"
 #include "halodi_msgs/msg/whole_body_trajectory_point.hpp"

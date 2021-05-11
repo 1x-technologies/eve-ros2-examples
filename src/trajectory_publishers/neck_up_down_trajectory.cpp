@@ -13,6 +13,7 @@
 // limitations under the License.
 #include <chrono>
 #include <memory>
+#include <vector>
 
 #include <boost/math/constants/constants.hpp>
 #include <boost/uuid/uuid.hpp>

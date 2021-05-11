@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include <boost/uuid/uuid_generators.hpp>
 #include "unique_identifier_msgs/msg/uuid.hpp"
 

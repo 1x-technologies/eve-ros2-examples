@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <functional>
+#include <memory>
 
 #include "action_msgs/msg/goal_status.hpp"
 #include "rclcpp/rclcpp.hpp"
