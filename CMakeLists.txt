@@ -50,13 +50,10 @@ ament_target_dependencies(neck_up_down rclcpp std_msgs halodi_msgs action_msgs t
 add_executable(go_wild src/trajectory_publishers/go_wild.cpp)
 ament_target_dependencies(go_wild rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-add_executable(yaw_pivot src/trajectory_publishers/yaw_and_pivot.cpp)
-ament_target_dependencies(yaw_pivot rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
-
 add_executable(random_walk src/trajectory_publishers/random_walk.cpp)
 ament_target_dependencies(random_walk rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-install(TARGETS random_walk go_wild drive_in_circle move_left_hand wave_right_hand go_to_default neck_up_down yaw_pivot  DESTINATION lib/${PROJECT_NAME})
+install(TARGETS random_walk go_wild drive_in_circle move_left_hand wave_right_hand go_to_default neck_up_down DESTINATION lib/${PROJECT_NAME})
 
 # Install Python executables
 ament_python_install_package(${PROJECT_NAME})
