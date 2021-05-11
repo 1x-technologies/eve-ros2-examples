@@ -28,7 +28,7 @@ class DefaultPosePublisher : public rclcpp::Node {
  public:
   DefaultPosePublisher() : Node("default_pose_publisher") {
     // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when
-    // publish_trajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
+    // publishTrajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
     rclcpp::QoS latching_qos(1);
     latching_qos.transient_local();
 
@@ -37,21 +37,21 @@ class DefaultPosePublisher : public rclcpp::Node {
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10,
-                                                                            std::bind(&DefaultPosePublisher::status_callback, this, _1));
+                                                                            std::bind(&DefaultPosePublisher::statusCallback, this, _1));
 
-    // send the first trajectory command. The subscriber will send the commands again using the logic in status_callback(msg)
-    uuid_msg_ = create_random_uuid();
-    publish_trajectory(uuid_msg_);
+    // send the first trajectory command. The subscriber will send the commands again using the logic in statusCallback(msg)
+    uuidMsg_ = createRandomUuidMsg();
+    publishTrajectory(uuidMsg_);
   }
 
  private:
-  void timer_callback() {
-    // send the first trajectory command. The subscriber will send the commands again using the logic in status_callback(msg)
-    uuid_msg_ = create_random_uuid();
-    publish_trajectory(uuid_msg_);
+  void timerCallback() {
+    // send the first trajectory command. The subscriber will send the commands again using the logic in statusCallback(msg)
+    uuidMsg_ = createRandomUuidMsg();
+    publishTrajectory(uuidMsg_);
   }
 
-  void status_callback(action_msgs::msg::GoalStatus::SharedPtr msg) {
+  void statusCallback(action_msgs::msg::GoalStatus::SharedPtr msg) {
     switch (msg->status) {
       case 1:
         RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
@@ -70,15 +70,15 @@ class DefaultPosePublisher : public rclcpp::Node {
     }
   }
 
-  void publish_trajectory(unique_identifier_msgs::msg::UUID uuid_msg) {
+  void publishTrajectory(unique_identifier_msgs::msg::UUID uuid_msg) {
     RCLCPP_INFO(this->get_logger(), "Sending trajectory, listening for whole_body_trajectory_status...");
-    publisher_->publish(gen_default_msg(uuid_msg));
+    publisher_->publish(genDefaultMsg(uuid_msg));
   }
 
  private:
   rclcpp::Publisher<halodi_msgs::msg::WholeBodyTrajectory>::SharedPtr publisher_;
   rclcpp::Subscription<action_msgs::msg::GoalStatus>::SharedPtr subscription_;
-  unique_identifier_msgs::msg::UUID uuid_msg_;
+  unique_identifier_msgs::msg::UUID uuidMsg_;
 };
 
 }  // namespace eve_ros2_examples

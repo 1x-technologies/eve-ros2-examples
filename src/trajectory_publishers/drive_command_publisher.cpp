@@ -19,6 +19,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
+namespace eve_ros2_examples {
+
 using namespace std::chrono_literals;
 
 /* This example creates a subclass of Node and uses std::bind() to register a
@@ -28,11 +30,11 @@ class DrivingCommandPublisher : public rclcpp::Node {
  public:
   DrivingCommandPublisher() : Node("driving_command_publisher"), count_(0) {
     publisher_ = this->create_publisher<halodi_msgs::msg::DrivingCommand>("/eve/driving_command", 10);
-    timer_ = this->create_wall_timer(50ms, std::bind(&DrivingCommandPublisher::timer_callback, this));
+    timer_ = this->create_wall_timer(50ms, std::bind(&DrivingCommandPublisher::timerCallback, this));
   }
 
  private:
-  void timer_callback() {
+  void timerCallback() {
     auto message = halodi_msgs::msg::DrivingCommand();
     message.filter_driving_command = false;
     message.linear_velocity = 1.0;
@@ -46,9 +48,11 @@ class DrivingCommandPublisher : public rclcpp::Node {
   size_t count_;
 };
 
+}  // namespace eve_ros2_examples
+
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<DrivingCommandPublisher>());
+  rclcpp::spin(std::make_shared<eve_ros2_examples::DrivingCommandPublisher>());
   rclcpp::shutdown();
   return 0;
 }

@@ -4,8 +4,8 @@
   <name>eve_ros2_examples</name>
   <version>1.0.0</version>
   <description>A package full of examples that show the usage of all of EVE's ROS2 API</description>
-  <author email="michael@halodi.com">Michael Purcell</author>
-  <maintainer email="michael@halodi.com">Michael Purcellh</maintainer>
+  <author email="michael.purcell@halodi.com">Michael Purcell</author>
+  <maintainer email="michael.purcell@halodi.com">Michael Purcell</maintainer>
   <license>Apache License 2.0</license>
   <url type="website">https://github.com/Halodi/eve-ros2-examples</url>
 
@@ -19,8 +19,10 @@
   <depend>action_msgs</depend>
   <depend>halodi_msgs</depend>
 
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_cmake_clang_format</test_depend>
+  <test_depend>ament_cmake_clang_tidy</test_depend>
+  <!-- <test_depend>ament_cmake_cppcheck</test_depend> -->
+  <!-- <test_depend>ament_cmake_pycodestyle</test_depend> -->
 
   <export>
     <build_type>ament_cmake</build_type>

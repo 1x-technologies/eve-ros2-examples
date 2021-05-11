@@ -14,12 +14,12 @@
 
 namespace eve_ros2_examples {
 
-unique_identifier_msgs::msg::UUID create_random_uuid() {
+unique_identifier_msgs::msg::UUID createRandomUuidMsg() {
   // Create a random uuid to track msgs
   boost::uuids::random_generator gen;
   boost::uuids::uuid u = gen();
   unique_identifier_msgs::msg::UUID uuid_msg;
-  std::array<uint8_t, 16> uuid;
+  std::array<uint8_t, 16> uuid{};
   std::copy(std::begin(u.data), std::end(u.data), uuid.begin());
   uuid_msg.uuid = uuid;
   return uuid_msg;
@@ -28,8 +28,7 @@ unique_identifier_msgs::msg::UUID create_random_uuid() {
 /*
 This generates the individual single joint command
 */
-halodi_msgs::msg::JointSpaceCommand generate_joint_space_command(int32_t joint_id, double q_des, double qd_des = 0.0,
-                                                                 double qdd_des = 0.0) {
+halodi_msgs::msg::JointSpaceCommand generateJointSpaceCommand(int32_t joint_id, double q_des, double qd_des = 0.0, double qdd_des = 0.0) {
   halodi_msgs::msg::JointSpaceCommand ret_msg;
   halodi_msgs::msg::JointName name;
   name.joint_id = joint_id;
@@ -44,9 +43,9 @@ halodi_msgs::msg::JointSpaceCommand generate_joint_space_command(int32_t joint_i
 /*
 This generates an individual task space command
 */
-halodi_msgs::msg::TaskSpaceCommand generate_task_space_command(int32_t body_frame_id, int32_t expressed_in_frame_id, bool use_z_up,
-                                                               double px_des, double py_des, double pz_des, double roll_des = 0.0,
-                                                               double pitch_des = 0.0, double yaw_des = 0.0) {
+halodi_msgs::msg::TaskSpaceCommand generateTaskSpaceCommand(int32_t body_frame_id, int32_t expressed_in_frame_id, bool use_z_up,
+                                                            double px_des, double py_des, double pz_des, double roll_des = 0.0,
+                                                            double pitch_des = 0.0, double yaw_des = 0.0) {
   halodi_msgs::msg::TaskSpaceCommand ret_msg;
 
   halodi_msgs::msg::ReferenceFrameName body_frame, expressed_in_frame;
@@ -72,7 +71,7 @@ halodi_msgs::msg::TaskSpaceCommand generate_task_space_command(int32_t body_fram
   return ret_msg;
 }
 
-halodi_msgs::msg::WholeBodyTrajectoryPoint gen_default_target(int32_t t) {
+halodi_msgs::msg::WholeBodyTrajectoryPoint genDefaultTarget(int32_t t) {
   halodi_msgs::msg::WholeBodyTrajectoryPoint ret_msg;
 
   builtin_interfaces::msg::Duration duration;
@@ -86,26 +85,26 @@ halodi_msgs::msg::WholeBodyTrajectoryPoint gen_default_target(int32_t t) {
   // for this example this part is only effective if the wheeled base (ReferenceFrameName::BASE) is rested on a slope.
   //
   // For more info on the TaskSpaceCommand msgs check out "halodi-messages/halodi_msgs/msg/TaskSpaceCommand.idl"
-  ret_msg.task_space_commands.push_back(generate_task_space_command(halodi_msgs::msg::ReferenceFrameName::PELVIS,
-                                                                    halodi_msgs::msg::ReferenceFrameName::BASE, true, 0.0, 0.0, 0.91));
+  ret_msg.task_space_commands.push_back(generateTaskSpaceCommand(halodi_msgs::msg::ReferenceFrameName::PELVIS,
+                                                                 halodi_msgs::msg::ReferenceFrameName::BASE, true, 0.0, 0.0, 0.91));
 
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_SHOULDER_PITCH, 0.3));
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_SHOULDER_ROLL, 0.0));
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_SHOULDER_YAW, 0.0));
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_ELBOW_PITCH, -1.3));
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_ELBOW_YAW, 0.0));
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_WRIST_PITCH, 0.2));
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_WRIST_ROLL, 0.0));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_SHOULDER_PITCH, 0.3));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_SHOULDER_ROLL, 0.0));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_SHOULDER_YAW, 0.0));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_ELBOW_PITCH, -1.3));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_ELBOW_YAW, 0.0));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_WRIST_PITCH, 0.2));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_WRIST_ROLL, 0.0));
 
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_SHOULDER_PITCH, 0.3));
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_SHOULDER_ROLL, 0.0));
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_SHOULDER_YAW, 0.0));
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_ELBOW_PITCH, -1.3));
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_ELBOW_YAW, 0.0));
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_WRIST_PITCH, 0.2));
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_WRIST_ROLL, 0.0));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_SHOULDER_PITCH, 0.3));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_SHOULDER_ROLL, 0.0));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_SHOULDER_YAW, 0.0));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_ELBOW_PITCH, -1.3));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_ELBOW_YAW, 0.0));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_WRIST_PITCH, 0.2));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_WRIST_ROLL, 0.0));
 
-  ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::NECK_PITCH, 0.0));
+  ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::NECK_PITCH, 0.0));
 
   return ret_msg;
 }
@@ -116,7 +115,7 @@ desired joint configurations for the arms, with no more than one desired value p
 
 The desired time at which we want to reach the target is also specified.
 */
-halodi_msgs::msg::WholeBodyTrajectory gen_default_msg(unique_identifier_msgs::msg::UUID uuid_msg = create_random_uuid()) {
+halodi_msgs::msg::WholeBodyTrajectory genDefaultMsg(unique_identifier_msgs::msg::UUID uuid_msg = createRandomUuidMsg()) {
   // begin construction of the publsihed msg
   halodi_msgs::msg::WholeBodyTrajectory trajectory_msg;
   trajectory_msg.append_trajectory = false;
@@ -126,7 +125,7 @@ halodi_msgs::msg::WholeBodyTrajectory gen_default_msg(unique_identifier_msgs::ms
   trajectory_msg.trajectory_id = uuid_msg;
 
   // we give the robot 3 seconds to return to its default configuration
-  trajectory_msg.trajectory_points.push_back(gen_default_target(3));
+  trajectory_msg.trajectory_points.push_back(genDefaultTarget(3));
 
   return trajectory_msg;
 }

@@ -34,7 +34,7 @@ class RandomWalk : public rclcpp::Node {
  public:
   RandomWalk() : Node("random_trajectory_publisher") {
     // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when
-    // publish_trajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
+    // publishTrajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
     rclcpp::QoS latching_qos(1);
     latching_qos.transient_local();
 
@@ -43,17 +43,17 @@ class RandomWalk : public rclcpp::Node {
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10,
-                                                                            std::bind(&RandomWalk::status_callback, this, _1));
+                                                                            std::bind(&RandomWalk::statusCallback, this, _1));
 
-    // send the first trajectory command. The subscriber will send the commands again using the logic in status_callback(msg)
-    uuid_msg_ = create_random_uuid();
+    // send the first trajectory command. The subscriber will send the commands again using the logic in statusCallback(msg)
+    uuidMsg_ = createRandomUuidMsg();
 
-    gen_random_numbers();
-    publish_trajectory(uuid_msg_);
+    genRandomNumbers();
+    publishTrajectory(uuidMsg_);
   }
 
  private:
-  void status_callback(action_msgs::msg::GoalStatus::SharedPtr msg) {
+  void statusCallback(action_msgs::msg::GoalStatus::SharedPtr msg) {
     switch (msg->status) {
       case 1:
         RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
@@ -65,10 +65,10 @@ class RandomWalk : public rclcpp::Node {
         RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
         // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send
         // another command
-        if (msg->goal_info.goal_id.uuid == uuid_msg_.uuid) {
-          uuid_msg_ = create_random_uuid();
-          // gen_random_numbers();
-          publish_trajectory(uuid_msg_);
+        if (msg->goal_info.goal_id.uuid == uuidMsg_.uuid) {
+          uuidMsg_ = createRandomUuidMsg();
+          // genRandomNumbers();
+          publishTrajectory(uuidMsg_);
         }
         break;
       default:
@@ -76,32 +76,32 @@ class RandomWalk : public rclcpp::Node {
     }
   }
 
-  void gen_random_numbers() {
+  void genRandomNumbers() {
     std::default_random_engine generator;
     // std::normal_distribution<double> distribution(0.0,0.05);
     std::uniform_real_distribution<> distribution(-0.2, 0.2);
     std::uniform_real_distribution<> distribution_ph(-0.05, 0.05);
 
-    traj_points_.clear();
-    traj_point_default_ = std::vector<double>{0.91, 0.3, 0.0, 0.0, -1.3, 0.0, 0.2, 0.0, 0.3, 0.0, 0.0, -1.3, 0.0, 0.2, 0.0, 0.0};
-    traj_points_.push_back(traj_point_default_);
+    trajPoints_.clear();
+    trajPointDefault_ = std::vector<double>{0.91, 0.3, 0.0, 0.0, -1.3, 0.0, 0.2, 0.0, 0.3, 0.0, 0.0, -1.3, 0.0, 0.2, 0.0, 0.0};
+    trajPoints_.push_back(trajPointDefault_);
 
     std::vector<double> traj_point_temp;
     for (int i = 1; i < NUM_TARGETS; i++) {
       traj_point_temp.clear();
-      for (std::vector<double>::size_type j = 0; j < traj_point_default_.size(); j++) {
-        // traj_point_temp.push_back(traj_points_[i-1][j] + distribution(generator));
+      for (std::vector<double>::size_type j = 0; j < trajPointDefault_.size(); j++) {
+        // traj_point_temp.push_back(trajPoints_[i-1][j] + distribution(generator));
         if (j == 0) {  // pelvis height
-          traj_point_temp.push_back(traj_points_[0][j] + distribution_ph(generator));
+          traj_point_temp.push_back(trajPoints_[0][j] + distribution_ph(generator));
         } else {
-          traj_point_temp.push_back(traj_points_[0][j] + distribution(generator));
+          traj_point_temp.push_back(trajPoints_[0][j] + distribution(generator));
         }
       }
-      traj_points_.push_back(traj_point_temp);
+      trajPoints_.push_back(traj_point_temp);
     }
   }
 
-  void publish_trajectory(unique_identifier_msgs::msg::UUID uuid_msg) {
+  void publishTrajectory(unique_identifier_msgs::msg::UUID uuid_msg) {
     // begin construction of the publsihed msg
     halodi_msgs::msg::WholeBodyTrajectory trajectory_msg;
     trajectory_msg.append_trajectory = false;
@@ -114,9 +114,9 @@ class RandomWalk : public rclcpp::Node {
     // offset from time at which this published message is received
     int t = 0;
     for (int i = 0; i < NUM_TARGETS; i++) {
-      trajectory_msg.trajectory_points.push_back(gen_target_from_vector(traj_points_[i], t += 4));
+      trajectory_msg.trajectory_points.push_back(genTargetFromVector(trajPoints_[i], t += 4));
     }
-    trajectory_msg.trajectory_points.push_back(gen_default_target(t += 4));
+    trajectory_msg.trajectory_points.push_back(genDefaultTarget(t += 4));
 
     RCLCPP_INFO(this->get_logger(), "Sending trajectory, listening for whole_body_trajectory_status...");
     publisher_->publish(trajectory_msg);
@@ -128,7 +128,7 @@ class RandomWalk : public rclcpp::Node {
 
   The desired time at which we want to reach these joint targets is also specified.
   */
-  WholeBodyTrajectoryPoint gen_target_from_vector(std::vector<double>& vec, int t) {
+  WholeBodyTrajectoryPoint genTargetFromVector(std::vector<double>& vec, int t) {
     WholeBodyTrajectoryPoint ret_msg;
 
     builtin_interfaces::msg::Duration duration;
@@ -136,35 +136,35 @@ class RandomWalk : public rclcpp::Node {
     ret_msg.time_from_start = duration;
 
     int ind = 0;
-    ret_msg.task_space_commands.push_back(generate_task_space_command(
-        halodi_msgs::msg::ReferenceFrameName::PELVIS, halodi_msgs::msg::ReferenceFrameName::BASE, true, 0.0, 0.0, vec[ind++]));
+    ret_msg.task_space_commands.push_back(generateTaskSpaceCommand(halodi_msgs::msg::ReferenceFrameName::PELVIS,
+                                                                   halodi_msgs::msg::ReferenceFrameName::BASE, true, 0.0, 0.0, vec[ind++]));
 
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_SHOULDER_PITCH, vec[ind++]));
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_SHOULDER_ROLL, vec[ind++]));
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_SHOULDER_YAW, vec[ind++]));
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_ELBOW_PITCH, vec[ind++]));
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_ELBOW_YAW, vec[ind++]));
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_WRIST_PITCH, vec[ind++]));
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::LEFT_WRIST_ROLL, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_SHOULDER_PITCH, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_SHOULDER_ROLL, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_SHOULDER_YAW, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_ELBOW_PITCH, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_ELBOW_YAW, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_WRIST_PITCH, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_WRIST_ROLL, vec[ind++]));
 
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_SHOULDER_PITCH, vec[ind++]));
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_SHOULDER_ROLL, vec[ind++]));
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_SHOULDER_YAW, vec[ind++]));
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_ELBOW_PITCH, vec[ind++]));
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_ELBOW_YAW, vec[ind++]));
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_WRIST_PITCH, vec[ind++]));
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::RIGHT_WRIST_ROLL, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_SHOULDER_PITCH, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_SHOULDER_ROLL, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_SHOULDER_YAW, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_ELBOW_PITCH, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_ELBOW_YAW, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_WRIST_PITCH, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_WRIST_ROLL, vec[ind++]));
 
-    ret_msg.joint_space_commands.push_back(generate_joint_space_command(halodi_msgs::msg::JointName::NECK_PITCH, vec[ind++]));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(halodi_msgs::msg::JointName::NECK_PITCH, vec[ind++]));
 
     return ret_msg;
   }
 
   rclcpp::Publisher<halodi_msgs::msg::WholeBodyTrajectory>::SharedPtr publisher_;
   rclcpp::Subscription<action_msgs::msg::GoalStatus>::SharedPtr subscription_;
-  unique_identifier_msgs::msg::UUID uuid_msg_;
-  std::vector<double> traj_point_default_;
-  std::vector<std::vector<double>> traj_points_;
+  unique_identifier_msgs::msg::UUID uuidMsg_;
+  std::vector<double> trajPointDefault_;
+  std::vector<std::vector<double>> trajPoints_;
 };
 
 }  // namespace eve_ros2_examples
