@@ -12,47 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <memory>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
-#include "rclcpp/rclcpp.hpp"
+#include <memory>
 #include "action_msgs/msg/goal_status.hpp"
-#include "unique_identifier_msgs/msg/uuid.hpp"
+#include "halodi_msgs/msg/joint_name.hpp"
+#include "halodi_msgs/msg/joint_space_command.hpp"
 #include "halodi_msgs/msg/whole_body_trajectory.hpp"
 #include "halodi_msgs/msg/whole_body_trajectory_point.hpp"
-#include "halodi_msgs/msg/joint_space_command.hpp"
-#include "halodi_msgs/msg/joint_name.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "unique_identifier_msgs/msg/uuid.hpp"
 
 using namespace halodi_msgs::msg;
 using std::placeholders::_1;
 
-class WavingRightHandPublisher : public rclcpp::Node
-{
-public:
-  WavingRightHandPublisher()
-  : Node("waving_hand_trajectory_publisher")
-  {
-
-      // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when publish_trajectory is called the first time.
-      // Note: If the trajectory manager starts after this node, it'll execute immediatly.
-      rclcpp::QoS latching_qos(1);
-      latching_qos.transient_local();
+class WavingRightHandPublisher : public rclcpp::Node {
+ public:
+  WavingRightHandPublisher() : Node("waving_hand_trajectory_publisher") {
+    // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when
+    // publish_trajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
+    rclcpp::QoS latching_qos(1);
+    latching_qos.transient_local();
 
     // set up publisher to trajectory topic
     publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
 
     // subscribe to the tractory status topic
-    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10, std::bind(&WavingRightHandPublisher::status_callback, this, _1));
+    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(
+        "/eve/whole_body_trajectory_status", 10, std::bind(&WavingRightHandPublisher::status_callback, this, _1));
 
     // send the first trajectory command. The subscriber will send the commands again using the logic in status_callback(msg)
     uuid_msg_ = create_random_uuid();
     publish_trajectory(uuid_msg_);
   }
 
-private:
-  void status_callback(action_msgs::msg::GoalStatus::SharedPtr msg)
-  {
-    switch(msg->status){
+ private:
+  void status_callback(action_msgs::msg::GoalStatus::SharedPtr msg) {
+    switch (msg->status) {
       case 1:
         RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
         break;
@@ -61,8 +57,9 @@ private:
         break;
       case 4:
         RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
-        //If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send another command
-        if(msg->goal_info.goal_id.uuid==uuid_msg_.uuid){
+        // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send
+        // another command
+        if (msg->goal_info.goal_id.uuid == uuid_msg_.uuid) {
           uuid_msg_ = create_random_uuid();
           publish_trajectory(uuid_msg_);
         }
@@ -72,18 +69,18 @@ private:
     }
   }
 
-  unique_identifier_msgs::msg::UUID create_random_uuid()
-  {
-    //Create a random uuid to track msgs
-    boost::uuids::random_generator gen; boost::uuids::uuid u = gen();
+  unique_identifier_msgs::msg::UUID create_random_uuid() {
+    // Create a random uuid to track msgs
+    boost::uuids::random_generator gen;
+    boost::uuids::uuid u = gen();
     unique_identifier_msgs::msg::UUID uuid_msg;
-    std::array<uint8_t, 16> uuid; std::copy(std::begin(u.data), std::end(u.data), uuid.begin());
+    std::array<uint8_t, 16> uuid;
+    std::copy(std::begin(u.data), std::end(u.data), uuid.begin());
     uuid_msg.uuid = uuid;
     return uuid_msg;
   }
 
-  void publish_trajectory(unique_identifier_msgs::msg::UUID uuid_msg)
-  {
+  void publish_trajectory(unique_identifier_msgs::msg::UUID uuid_msg) {
     // begin construction of the publsihed msg
     WholeBodyTrajectory trajectory_msg;
     trajectory_msg.append_trajectory = false;
@@ -105,8 +102,7 @@ private:
   /*
   This generates the individual single joint command
   */
-  JointSpaceCommand generate_joint_space_command(int32_t joint_id, double q_des, double qd_des = 0.0, double qdd_des = 0.0)
-  {
+  JointSpaceCommand generate_joint_space_command(int32_t joint_id, double q_des, double qd_des = 0.0, double qdd_des = 0.0) {
     JointSpaceCommand ret_msg;
     JointName name;
     name.joint_id = joint_id;
@@ -124,8 +120,7 @@ private:
 
   The desired time at which we want to reach these joint targets is also specified.
   */
-  WholeBodyTrajectoryPoint target1_(int32_t t)
-  {
+  WholeBodyTrajectoryPoint target1_(int32_t t) {
     WholeBodyTrajectoryPoint ret_msg;
 
     builtin_interfaces::msg::Duration duration;
@@ -141,8 +136,7 @@ private:
     return ret_msg;
   }
 
-  WholeBodyTrajectoryPoint target2_(int32_t t)
-  {
+  WholeBodyTrajectoryPoint target2_(int32_t t) {
     WholeBodyTrajectoryPoint ret_msg;
 
     builtin_interfaces::msg::Duration duration;
@@ -158,8 +152,7 @@ private:
     return ret_msg;
   }
 
-  WholeBodyTrajectoryPoint target3_(int32_t t)
-  {
+  WholeBodyTrajectoryPoint target3_(int32_t t) {
     WholeBodyTrajectoryPoint ret_msg;
 
     builtin_interfaces::msg::Duration duration;
@@ -180,8 +173,7 @@ private:
   unique_identifier_msgs::msg::UUID uuid_msg_;
 };
 
-int main(int argc, char * argv[])
-{
+int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<WavingRightHandPublisher>());
   rclcpp::shutdown();

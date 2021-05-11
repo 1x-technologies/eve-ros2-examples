@@ -32,28 +32,28 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
-add_executable(drive_in_circle src/drive_command_publisher.cpp)
+add_executable(drive_in_circle src/trajectory_publishers/drive_command_publisher.cpp)
 ament_target_dependencies(drive_in_circle rclcpp std_msgs halodi_msgs action_msgs)
 
-add_executable(move_left_hand src/left_hand_task_space_publisher.cpp)
+add_executable(move_left_hand src/trajectory_publishers/left_hand_task_space_publisher.cpp)
 ament_target_dependencies(move_left_hand rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-add_executable(wave_right_hand src/wave_right_hand_publisher.cpp)
+add_executable(wave_right_hand src/trajectory_publishers/wave_right_hand_publisher.cpp)
 ament_target_dependencies(wave_right_hand rclcpp halodi_msgs action_msgs)
 
-add_executable(go_to_default src/default_pose_publisher.cpp)
+add_executable(go_to_default src/trajectory_publishers/default_pose_publisher.cpp)
 ament_target_dependencies(go_to_default rclcpp halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-add_executable(neck_up_down src/neck_up_down_trajectory.cpp)
+add_executable(neck_up_down src/trajectory_publishers/neck_up_down_trajectory.cpp)
 ament_target_dependencies(neck_up_down rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-add_executable(go_wild src/go_wild.cpp)
+add_executable(go_wild src/trajectory_publishers/go_wild.cpp)
 ament_target_dependencies(go_wild rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-add_executable(yaw_pivot src/yaw_and_pivot.cpp)
+add_executable(yaw_pivot src/trajectory_publishers/yaw_and_pivot.cpp)
 ament_target_dependencies(yaw_pivot rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-add_executable(random_walk src/random_walk.cpp)
+add_executable(random_walk src/trajectory_publishers/random_walk.cpp)
 ament_target_dependencies(random_walk rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
 install(TARGETS random_walk go_wild drive_in_circle move_left_hand wave_right_hand go_to_default neck_up_down yaw_pivot  DESTINATION lib/${PROJECT_NAME})
