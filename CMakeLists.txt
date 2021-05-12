@@ -21,15 +21,16 @@ find_package(action_msgs REQUIRED)
 find_package(halodi_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
 
+###########
+## Build ##
+###########
 include_directories(
   include
   ${Boost_INCLUDE_DIRS}
 )
 
+# Install cpp executables
 add_executable(drive_in_circle src/trajectory_publishers/drive_command_publisher.cpp)
 ament_target_dependencies(drive_in_circle rclcpp std_msgs halodi_msgs action_msgs)
 
@@ -51,27 +52,29 @@ ament_target_dependencies(go_wild rclcpp std_msgs halodi_msgs action_msgs tf2 tf
 add_executable(random_walk src/trajectory_publishers/random_walk.cpp)
 ament_target_dependencies(random_walk rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-install(TARGETS random_walk go_wild drive_in_circle move_left_hand wave_right_hand go_to_default neck_up_down DESTINATION lib/${PROJECT_NAME})
-
-# Install Python executables
-ament_python_install_package(${PROJECT_NAME})
-install(PROGRAMS
-  ${PROJECT_NAME}/whole_body_trajectory_example.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-
+#############
+## Testing ##
+#############
 if(BUILD_TESTING)
+
+  find_package(ament_cmake_gtest REQUIRED)
+  include_directories(test)
+  
+  set(TEST_SOURCES test/gtest_main.cpp test/utils_test.cpp)
+  set(TEST_PKG_EXE test_eve_ros2_examples)
+    ament_add_gtest(${TEST_PKG_EXE} ${TEST_SOURCES})
+
   find_package(ament_cmake_clang_format REQUIRED)
   ament_clang_format(CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../../.clang-format")
 
   find_package(ament_cmake_clang_tidy REQUIRED)
-  # ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../../.clang-tidy")
+  ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../../.clang-tidy")
 
   find_package(ament_cmake_copyright REQUIRED)
   ament_copyright()
 
   find_package(ament_cmake_cppcheck REQUIRED)
-  ament_cppcheck(LANGUAGE C++)
+  ament_cppcheck(LANGUAGE C++ EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/test")
 
   find_package(ament_cmake_cpplint REQUIRED)
   # ament_cpplint()
@@ -86,5 +89,22 @@ if(BUILD_TESTING)
   ament_xmllint()
 
 endif()
+
+#############
+## Install ##
+#############
+# Install Python executables
+ament_python_install_package(${PROJECT_NAME})
+install(PROGRAMS
+  ${PROJECT_NAME}/whole_body_trajectory_example.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(TARGETS random_walk go_wild drive_in_circle move_left_hand wave_right_hand go_to_default neck_up_down DESTINATION
+  DESTINATION lib/${PROJECT_NAME}
+)
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION include/${PROJECT_NAME}
+)
 
 ament_package()
