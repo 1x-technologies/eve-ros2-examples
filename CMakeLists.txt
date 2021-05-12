@@ -11,9 +11,7 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
+add_compile_options(-Wall -Wextra -Wpedantic)
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
@@ -77,6 +75,16 @@ if(BUILD_TESTING)
 
   find_package(ament_cmake_cpplint REQUIRED)
   # ament_cpplint()
+
+  find_package(ament_cmake_flake8 REQUIRED)
+  ament_flake8()
+
+  find_package(ament_cmake_pep257 REQUIRED)
+  # ament_pep257()
+  
+  find_package(ament_cmake_xmllint REQUIRED)
+  ament_xmllint()
+
 endif()
 
 ament_package()
