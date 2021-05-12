@@ -2,10 +2,9 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>eve_ros2_examples</name>
-  <version>1.0.0</version>
-  <description>A package full of examples that show the usage of all of EVE's ROS2 API</description>
-  <author email="michael@halodi.com">Michael Purcell</author>
-  <maintainer email="michael@halodi.com">Michael Purcellh</maintainer>
+  <version>0.0.0</version>
+  <description>A package with examples that show common usage of EVE's ROS2 API</description>
+  <maintainer email="michael.purcell@halodi.com">Michael Purcell</maintainer>
   <license>Apache License 2.0</license>
   <url type="website">https://github.com/Halodi/eve-ros2-examples</url>
 
@@ -14,13 +13,21 @@
   
   <depend>rclcpp</depend>
   <depend>rclpy</depend>
-  
   <depend>std_msgs</depend>
   <depend>action_msgs</depend>
   <depend>halodi_msgs</depend>
+  <depend>unique_identifier_msgs</depend>
 
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
+  <test_depend>halodi_clang_tooling</test_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>ament_cmake_clang_format</test_depend>
+  <test_depend>ament_cmake_clang_tidy</test_depend>
+  <test_depend>ament_cmake_copyright</test_depend>
+  <test_depend>ament_cmake_cppcheck</test_depend>
+  <test_depend>ament_cmake_cpplint</test_depend>
+  <test_depend>ament_cmake_flake8</test_depend>
+  <test_depend>ament_cmake_pep257</test_depend>
+  <test_depend>ament_cmake_xmllint</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
