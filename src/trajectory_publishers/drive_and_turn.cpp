@@ -26,11 +26,11 @@ using namespace std::chrono_literals;
 /* This example creates a subclass of Node and uses std::bind() to register a
  * member function as a callback from the timer. */
 
-class DrivingCommandPublisher : public rclcpp::Node {
+class DriveAndTurnPublisher : public rclcpp::Node {
  public:
-  DrivingCommandPublisher() : Node("driving_command_publisher"), count_(0) {
+  DriveAndTurnPublisher() : Node("driving_command_publisher"), count_(0) {
     publisher_ = this->create_publisher<halodi_msgs::msg::DrivingCommand>("/eve/driving_command", 10);
-    timer_ = this->create_wall_timer(50ms, std::bind(&DrivingCommandPublisher::timerCallback, this));
+    timer_ = this->create_wall_timer(50ms, std::bind(&DriveAndTurnPublisher::timerCallback, this));
   }
 
  private:
@@ -52,7 +52,7 @@ class DrivingCommandPublisher : public rclcpp::Node {
 
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<eve_ros2_examples::DrivingCommandPublisher>());
+  rclcpp::spin(std::make_shared<eve_ros2_examples::DriveAndTurnPublisher>());
   rclcpp::shutdown();
   return 0;
 }

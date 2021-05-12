@@ -37,9 +37,9 @@ using halodi_msgs::msg::WholeBodyTrajectory;
 using halodi_msgs::msg::WholeBodyTrajectoryPoint;
 using std::placeholders::_1;
 
-class WavingRightHandPublisher : public rclcpp::Node {
+class WaveRightHandPublisher : public rclcpp::Node {
  public:
-  WavingRightHandPublisher() : Node("waving_hand_trajectory_publisher") {
+  WaveRightHandPublisher() : Node("waving_hand_trajectory_publisher") {
     // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when
     // publishTrajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
     rclcpp::QoS latching_qos(1);
@@ -50,7 +50,7 @@ class WavingRightHandPublisher : public rclcpp::Node {
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10,
-                                                                            std::bind(&WavingRightHandPublisher::statusCallback, this, _1));
+                                                                            std::bind(&WaveRightHandPublisher::statusCallback, this, _1));
 
     // send the first trajectory command. The subscriber will send the commands again using the logic in statusCallback(msg)
     uuidMsg_ = createRandomUuidMsg();
@@ -162,7 +162,7 @@ class WavingRightHandPublisher : public rclcpp::Node {
 
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<eve_ros2_examples::WavingRightHandPublisher>());
+  rclcpp::spin(std::make_shared<eve_ros2_examples::WaveRightHandPublisher>());
   rclcpp::shutdown();
   return 0;
 }

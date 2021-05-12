@@ -30,27 +30,26 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
-# Install cpp executables
-add_executable(drive_in_circle src/trajectory_publishers/drive_command_publisher.cpp)
-ament_target_dependencies(drive_in_circle rclcpp std_msgs halodi_msgs action_msgs)
+add_executable(default_pose src/trajectory_publishers/default_pose.cpp)
+ament_target_dependencies(default_pose rclcpp halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-add_executable(move_left_hand src/trajectory_publishers/left_hand_task_space_publisher.cpp)
-ament_target_dependencies(move_left_hand rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+add_executable(drive_and_turn src/trajectory_publishers/drive_and_turn.cpp)
+ament_target_dependencies(drive_and_turn rclcpp std_msgs halodi_msgs action_msgs)
 
-add_executable(wave_right_hand src/trajectory_publishers/wave_right_hand_publisher.cpp)
-ament_target_dependencies(wave_right_hand rclcpp halodi_msgs action_msgs)
+add_executable(full_body_extreme src/trajectory_publishers/full_body_extreme.cpp)
+ament_target_dependencies(full_body_extreme rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-add_executable(go_to_default src/trajectory_publishers/default_pose_publisher.cpp)
-ament_target_dependencies(go_to_default rclcpp halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+add_executable(left_hand_task_space_box src/trajectory_publishers/left_hand_task_space_box.cpp)
+ament_target_dependencies(left_hand_task_space_box rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-add_executable(neck_up_down src/trajectory_publishers/neck_up_down_trajectory.cpp)
+add_executable(neck_up_down src/trajectory_publishers/neck_up_down.cpp)
 ament_target_dependencies(neck_up_down rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-add_executable(go_wild src/trajectory_publishers/go_wild.cpp)
-ament_target_dependencies(go_wild rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+add_executable(random_arm_motion_low_range src/trajectory_publishers/random_arm_motion_low_range.cpp)
+ament_target_dependencies(random_arm_motion_low_range rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
 
-add_executable(random_walk src/trajectory_publishers/random_walk.cpp)
-ament_target_dependencies(random_walk rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+add_executable(wave_right_hand src/trajectory_publishers/wave_right_hand.cpp)
+ament_target_dependencies(wave_right_hand rclcpp halodi_msgs action_msgs)
 
 #############
 ## Testing ##
@@ -59,16 +58,16 @@ if(BUILD_TESTING)
 
   find_package(ament_cmake_gtest REQUIRED)
   include_directories(test)
-  
   set(TEST_SOURCES test/gtest_main.cpp test/utils_test.cpp)
   set(TEST_PKG_EXE test_eve_ros2_examples)
-    ament_add_gtest(${TEST_PKG_EXE} ${TEST_SOURCES})
+  ament_add_gtest(${TEST_PKG_EXE} ${TEST_SOURCES})
+  ament_target_dependencies(${TEST_PKG_EXE}  unique_identifier_msgs halodi_msgs)
 
   find_package(ament_cmake_clang_format REQUIRED)
   ament_clang_format(CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../../.clang-format")
 
   find_package(ament_cmake_clang_tidy REQUIRED)
-  ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../../.clang-tidy")
+  # ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../../.clang-tidy")
 
   find_package(ament_cmake_copyright REQUIRED)
   ament_copyright()
@@ -93,18 +92,18 @@ endif()
 #############
 ## Install ##
 #############
-# Install Python executables
 ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   ${PROJECT_NAME}/whole_body_trajectory_example.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(TARGETS random_walk go_wild drive_in_circle move_left_hand wave_right_hand go_to_default neck_up_down DESTINATION
+install(TARGETS default_pose drive_and_turn full_body_extreme left_hand_task_space_box neck_up_down random_arm_motion_low_range wave_right_hand
   DESTINATION lib/${PROJECT_NAME}
 )
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME}
 )
 
+ament_export_include_directories(include)
 ament_package()

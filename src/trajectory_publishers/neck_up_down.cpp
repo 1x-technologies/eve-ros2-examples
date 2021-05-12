@@ -42,17 +42,17 @@ using halodi_msgs::msg::WholeBodyTrajectory;
 using halodi_msgs::msg::WholeBodyTrajectoryPoint;
 using std::placeholders::_1;
 
-class TaskSpaceTrajectoryPublisher : public rclcpp::Node {
+class NeckUpDownPublisher : public rclcpp::Node {
  public:
-  TaskSpaceTrajectoryPublisher() : Node("task_space_trajectory_publisher") {
+  NeckUpDownPublisher() : Node("task_space_trajectory_publisher") {
     // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when
     // publishTrajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
     rclcpp::QoS latching_qos(1);
     latching_qos.transient_local();
 
     publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
-    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(
-        "/eve/whole_body_trajectory_status", 10, std::bind(&TaskSpaceTrajectoryPublisher::statusCallback, this, _1));
+    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10,
+                                                                            std::bind(&NeckUpDownPublisher::statusCallback, this, _1));
 
     // Send the first trajectory command. The subscriber will send additional commands to loop the same command in the subscriber
     // statusCallback
@@ -115,7 +115,7 @@ class TaskSpaceTrajectoryPublisher : public rclcpp::Node {
 
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<eve_ros2_examples::TaskSpaceTrajectoryPublisher>());
+  rclcpp::spin(std::make_shared<eve_ros2_examples::NeckUpDownPublisher>());
   rclcpp::shutdown();
   return 0;
 }

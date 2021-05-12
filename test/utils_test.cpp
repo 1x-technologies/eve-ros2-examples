@@ -16,6 +16,8 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "eve_ros2_examples/utils.h"
+
 namespace eve_ros2_examples {
 
 GTEST_TEST(UtilsTest, tOne) {

@@ -35,9 +35,9 @@ const double DEFAULT_HEIGHT_ = 0.91;
 const double SQUAT_HEIGHT_ = 0.7;
 const int TIME_INCREMENT_ = 3;
 
-class GoWildPublisher : public rclcpp::Node {
+class FullBodyExtremePublisher : public rclcpp::Node {
  public:
-  GoWildPublisher() : Node("GoWildPublisher") {
+  FullBodyExtremePublisher() : Node("FullBodyExtremePublisher") {
     // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when
     // publishTrajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
     rclcpp::QoS latching_qos(1);
@@ -48,7 +48,7 @@ class GoWildPublisher : public rclcpp::Node {
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10,
-                                                                            std::bind(&GoWildPublisher::statusCallback, this, _1));
+                                                                            std::bind(&FullBodyExtremePublisher::statusCallback, this, _1));
 
     // send the first trajectory command. The subscriber will send the commands again using the logic in statusCallback(msg)
     uuidMsg_ = createRandomUuidMsg();
@@ -274,7 +274,7 @@ class GoWildPublisher : public rclcpp::Node {
 }  // namespace eve_ros2_examples
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<eve_ros2_examples::GoWildPublisher>());
+  rclcpp::spin(std::make_shared<eve_ros2_examples::FullBodyExtremePublisher>());
   rclcpp::shutdown();
   return 0;
 }

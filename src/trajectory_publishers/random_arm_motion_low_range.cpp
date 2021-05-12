@@ -32,9 +32,9 @@ using std::placeholders::_1;
 const int TIME_INCREMENT_ = 3;
 const int NUM_TARGETS = 10;
 
-class RandomWalk : public rclcpp::Node {
+class RandomArmMotionLowRangePublisher : public rclcpp::Node {
  public:
-  RandomWalk() : Node("random_trajectory_publisher") {
+  RandomArmMotionLowRangePublisher() : Node("random_trajectory_publisher") {
     // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when
     // publishTrajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
     rclcpp::QoS latching_qos(1);
@@ -44,8 +44,8 @@ class RandomWalk : public rclcpp::Node {
     publisher_ = this->create_publisher<halodi_msgs::msg::WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
 
     // subscribe to the tractory status topic
-    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10,
-                                                                            std::bind(&RandomWalk::statusCallback, this, _1));
+    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(
+        "/eve/whole_body_trajectory_status", 10, std::bind(&RandomArmMotionLowRangePublisher::statusCallback, this, _1));
 
     // send the first trajectory command. The subscriber will send the commands again using the logic in statusCallback(msg)
     uuidMsg_ = createRandomUuidMsg();
@@ -173,7 +173,7 @@ class RandomWalk : public rclcpp::Node {
 
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
-  { rclcpp::spin(std::make_shared<eve_ros2_examples::RandomWalk>()); }
+  { rclcpp::spin(std::make_shared<eve_ros2_examples::RandomArmMotionLowRangePublisher>()); }
   rclcpp::shutdown();
   return 0;
 }
