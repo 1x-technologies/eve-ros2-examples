@@ -63,12 +63,12 @@ if(BUILD_TESTING)
   ament_add_gtest(${TEST_PKG_EXE} ${TEST_SOURCES})
   ament_target_dependencies(${TEST_PKG_EXE}  unique_identifier_msgs halodi_msgs)
 
-  find_package(halodi_clang_tooling QUIET)
+  find_package(halodi_ros2_code_quality QUIET)
   find_package(ament_cmake_clang_format REQUIRED)
-  ament_clang_format(CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../halodi-clang-tooling/.clang-format")
+  ament_clang_format(CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../halodi_ros2_code_quality/.clang-format")
 
   find_package(ament_cmake_clang_tidy REQUIRED)
-  ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../halodi-clang-tooling/.clang-tidy")
+  ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../halodi_ros2_code_quality/.clang-tidy")
 
   find_package(ament_cmake_copyright REQUIRED)
   ament_copyright()
