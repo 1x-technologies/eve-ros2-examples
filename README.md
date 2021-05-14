@@ -119,7 +119,7 @@ First clone our clang configurations into your workspace
 
 ```bash
 cd ~/eve_ws/src
-git clone git@gitlab.com:halodi/controls/halodi-clang-tooling.git
+git clone https://gitlab.com/halodi/controls/ros2/halodi-ros2-code-quality.git
 ```
 
 You then need to build again and run the test scripts:
