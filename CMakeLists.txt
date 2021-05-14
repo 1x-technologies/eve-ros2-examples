@@ -65,10 +65,10 @@ if(BUILD_TESTING)
 
   find_package(halodi_ros2_code_quality QUIET)
   find_package(ament_cmake_clang_format REQUIRED)
-  ament_clang_format(CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../halodi_ros2_code_quality/.clang-format")
+  ament_clang_format(CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../halodi-ros2-code-quality/.clang-format")
 
   find_package(ament_cmake_clang_tidy REQUIRED)
-  ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../halodi_ros2_code_quality/.clang-tidy")
+  ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../halodi-ros2-code-quality/.clang-tidy")
 
   find_package(ament_cmake_copyright REQUIRED)
   ament_copyright()
