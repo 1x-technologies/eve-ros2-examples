@@ -18,7 +18,7 @@ git clone git@gitlab.com:halodi/controls/halodi-messages.git
 ## Building
 cd ..
 source /opt/ros/foxy/setup.bash
-colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTING=0
 source install/setup.bash
 ```
 
