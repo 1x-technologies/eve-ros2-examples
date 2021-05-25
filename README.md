@@ -6,6 +6,11 @@ A ROS2 package full of C++ examples that show the usage of all of EVE's ROS2 API
 
 To download and compile this repository on its own follow the instructions below. You will first require at least the base install of [ros2](https://docs.ros.org/en/foxy/Installation/Linux-Install-Debians.html).
 
+Additional dependencies:
+```bash
+sudo apt install git build-essential python3-colcon-common-extensions libboost-math1.67-dev
+```
+
 ```bash
 mkdir -p ~/eve_ws/src
 cd ~/eve_ws/src
@@ -14,6 +19,10 @@ cd ~/eve_ws/src
 ## ssh
 git clone git@gitlab.com:halodi/controls/ros2/eve-ros2-examples.git
 git clone git@gitlab.com:halodi/controls/halodi-messages.git
+
+## http
+git clone https://github.com/Halodi/eve-ros2-examples.git
+git clone https://github.com/Halodi/halodi-messages.git
 
 ## Building
 cd ..
@@ -115,15 +124,18 @@ ros2 run eve-ros2-examples full_body_extreme
 In order to test the code in this repository or new code that you want to contribute, you must first run and pass a number of given tests that are specified in the CMakeLists.txt file
 These tests include a mixture of formatting a linting tools that span the c++ and python languages.
 
-First clone our clang configurations into your workspace
-
+First install the cmake interfaces to clang format and tidy:
 ```bash
-cd ~/eve_ws/src
-git clone https://gitlab.com/halodi/controls/ros2/halodi-ros2-code-quality.git
+sudo apt install ros-foxy-ament-cmake-clang-format ros-foxy-ament-cmake-clang-tidy
 ```
 
-You then need to build again and run the test scripts:
+Then clone our clang configurations into your workspace
+```bash
+cd ~/eve_ws/src
+git clone git@gitlab.com:halodi/controls/ros2/halodi-ros2-code-quality.git
+```
 
+You then need to build again and run the test scripts, with BUILD_TESTING on by default:
 ```bash
 cd ~/eve_ws/
 colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
