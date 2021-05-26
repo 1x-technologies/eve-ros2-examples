@@ -7,6 +7,7 @@ A ROS2 package full of C++ examples that show the usage of all of EVE's ROS2 API
 To download and compile this repository on its own follow the instructions below. You will first require at least the base install of [ros2](https://docs.ros.org/en/foxy/Installation/Linux-Install-Debians.html).
 
 Additional dependencies:
+
 ```bash
 sudo apt install git build-essential python3-colcon-common-extensions libboost-math1.67-dev
 ```
@@ -125,20 +126,23 @@ In order to test the code in this repository or new code that you want to contri
 These tests include a mixture of formatting a linting tools that span the c++ and python languages.
 
 First install the cmake interfaces to clang format and tidy:
+
 ```bash
 sudo apt install ros-foxy-ament-cmake-clang-format ros-foxy-ament-cmake-clang-tidy
 ```
 
 Then clone our clang configurations into your workspace
+
 ```bash
 cd ~/eve_ws/src
 git clone git@gitlab.com:halodi/controls/ros2/halodi-ros2-code-quality.git
 ```
 
-You then need to build again and run the test scripts, with BUILD_TESTING on by default:
+You then need to build again and run the test scripts, with BUILD_TESTING on:
+
 ```bash
 cd ~/eve_ws/
-colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTING=1
 colcon test --event-handlers console_cohesion+ --packages-select eve_ros2_examples
 ```
 
