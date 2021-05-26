@@ -143,6 +143,13 @@ You then need to build again and run the test scripts, with BUILD_TESTING on:
 ```bash
 cd ~/eve_ws/
 colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTING=1
+colcon test --packages-select eve_ros2_examples
+colcon test-result --all
+```
+
+When testing locally before pushing, you can print the test results straight to the console instead. Replace the last two lines above with the following:
+
+```bash
 colcon test --event-handlers console_cohesion+ --packages-select eve_ros2_examples
 ```
 
