@@ -69,6 +69,7 @@ if(BUILD_TESTING)
 
   find_package(ament_cmake_clang_tidy REQUIRED)
   ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../halodi-ros2-code-quality/.clang-tidy")
+  set_tests_properties(clang_tidy PROPERTIES TIMEOUT 120) 
 
   find_package(ament_cmake_copyright REQUIRED)
   ament_copyright()
