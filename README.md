@@ -1,4 +1,4 @@
-# eve-ros2-examples
+# eve_ros2_examples
 
 A ROS2 package full of C++ examples that show the usage of all of EVE's ROS2 API. Each example is a ROS2 node which publishes a trajectory for a real or simulated Eve to perform.
 
@@ -18,11 +18,11 @@ cd ~/eve_ws/src
 
 # Clone this repo and dependencies
 ## ssh
-git clone git@gitlab.com:halodi/controls/ros2/eve-ros2-examples.git
+git clone git@gitlab.com:halodi/controls/ros2/eve_ros2_examples.git
 git clone git@gitlab.com:halodi/controls/halodi-messages.git
 
 ## http
-git clone https://github.com/Halodi/eve-ros2-examples.git
+git clone https://github.com/Halodi/eve_ros2_examples.git
 git clone https://github.com/Halodi/halodi-messages.git
 
 ## Building
@@ -62,7 +62,7 @@ This examples results in EVE waving her right hand using a sequence of joint spa
 Run the example using the following:
 
 ```bash
-ros2 run eve-ros2-examples wave_right_hand
+ros2 run eve_ros2_examples wave_right_hand
 ```
 
 ### Return to default
@@ -72,7 +72,7 @@ In these examples, Eve remains in final pose specified in the published trajecto
 Run it using the following;
 
 ```bash
-ros2 run eve-ros2-examples default_pose
+ros2 run eve_ros2_examples default_pose
 ```
 
 ### Moving the left hand with task space trajectory
@@ -81,7 +81,7 @@ This example makes Eve move her left hand in a box shaped 5 point trajectory usi
 Run the example using the following:
 
 ```bash
-ros2 run eve-ros2-examples left_hand_task_space_box
+ros2 run eve_ros2_examples left_hand_task_space_box
 ```
 
 ### Moving the neck up and down
@@ -89,7 +89,7 @@ ros2 run eve-ros2-examples left_hand_task_space_box
 This example moves the neck up and down. The position gain may have to be increased in the trajectory msg as the default is quite low. This example is handy for exploring the visible area of the camera mounted in the head.
 
 ```bash
-ros2 run eve-ros2-examples neck_up_down
+ros2 run eve_ros2_examples neck_up_down
 ```
 
 ### Small random arm motions around default
@@ -97,7 +97,7 @@ ros2 run eve-ros2-examples neck_up_down
 This example create a sequence of arm joint angles chosen uniformly at random around their default configuration. The limits of the distribution are *+- 0.2 radians*. The pelvis height is also varied by a few centimeters only. This example is handy for having the robot appear somewhat lifelike during demos.
 
 ```bash
-ros2 run eve-ros2-examples random_arm_motion_low_range
+ros2 run eve_ros2_examples random_arm_motion_low_range
 ```
 
 ### Driving and turning
@@ -107,7 +107,7 @@ This example makes Eve drive in a circle using the DrivingCommand ROS2 Message. 
 Run the example using the following:
 
 ```bash
-ros2 run eve-ros2-examples drive_and_turn
+ros2 run eve_ros2_examples drive_and_turn
 ```
 
 ### Full body extreme motions
@@ -117,7 +117,16 @@ This example makes Eve move her whole body via a sequence of arm joints and pelv
 Run the example using the following:
 
 ```bash
-ros2 run eve-ros2-examples full_body_extreme
+ros2 run eve_ros2_examples full_body_extreme
+```
+
+### Whole body state subscriber
+
+This example shows how to subscribe to the latest estimate of Eve's state, on the */whole_body_state* topic. The most notable element here is the configuration of the [QoS profile](https://docs.ros.org/en/foxy/Concepts/About-Quality-of-Service-Settings.html) which in the case of this topic has reliability set to *Best effort*.
+Run the example using the following:
+
+```bash
+ros2 run eve_ros2_examples whole_body_state_subscriber
 ```
 
 ## Testing

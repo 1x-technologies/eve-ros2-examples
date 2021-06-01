@@ -51,6 +51,9 @@ ament_target_dependencies(random_arm_motion_low_range rclcpp std_msgs halodi_msg
 add_executable(wave_right_hand src/trajectory_publishers/wave_right_hand.cpp)
 ament_target_dependencies(wave_right_hand rclcpp halodi_msgs action_msgs)
 
+add_executable(whole_body_state_subscriber src/subscribers/whole_body_state_subscriber.cpp)
+ament_target_dependencies(whole_body_state_subscriber rclcpp halodi_msgs)
+
 #############
 ## Testing ##
 #############
@@ -100,7 +103,7 @@ install(PROGRAMS
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(TARGETS default_pose drive_and_turn full_body_extreme left_hand_task_space_box neck_up_down random_arm_motion_low_range wave_right_hand
+install(TARGETS default_pose drive_and_turn full_body_extreme left_hand_task_space_box neck_up_down random_arm_motion_low_range wave_right_hand whole_body_state_subscriber
   DESTINATION lib/${PROJECT_NAME}
 )
 install(DIRECTORY include/${PROJECT_NAME}/
