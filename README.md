@@ -1,4 +1,4 @@
-# eve_ros2_examples
+# eve-ros2-examples
 
 A ROS2 package full of C++ examples that show the usage of all of EVE's ROS2 API. Each example is a ROS2 node which publishes a trajectory for a real or simulated Eve to perform.
 
@@ -18,11 +18,11 @@ cd ~/eve_ws/src
 
 # Clone this repo and dependencies
 ## ssh
-git clone git@gitlab.com:halodi/controls/ros2/eve_ros2_examples.git
+git clone git@gitlab.com:halodi/controls/ros2/eve-ros2-examples.git
 git clone git@gitlab.com:halodi/controls/halodi-messages.git
 
 ## http
-git clone https://github.com/Halodi/eve_ros2_examples.git
+git clone https://github.com/Halodi/eve-ros2-examples.git
 git clone https://github.com/Halodi/halodi-messages.git
 
 ## Building
