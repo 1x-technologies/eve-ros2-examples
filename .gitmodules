@@ -1,0 +1,8 @@
+[submodule "ci_ws/src/halodi-messages"]
+	path = ci_ws/src/halodi-messages
+	url = ../../halodi-messages.git
+	branch = main
+[submodule "ci_ws/src/halodi-ros2-code-quality"]
+	path = ci_ws/src/halodi-ros2-code-quality
+	url = ../halodi-ros2-code-quality.git
+	branch = main
