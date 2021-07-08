@@ -114,16 +114,16 @@ class FullBodyExtremePublisher : public rclcpp::Node {
     ret_msg.task_space_commands.push_back(
         generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE, true, 0.0, 0.0, SQUAT_HEIGHT_));
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -1.9));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.75));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -2.42409));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -2.0944));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, 0.9));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_PITCH, -1.65));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_YAW, -0.3));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_WRIST_PITCH, -0.15));
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_PITCH, 0.3));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_PITCH, 0.98105));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_ROLL, 1.0));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_YAW, -0.75));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_YAW, 0.541053));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_ELBOW_PITCH, -1.1));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_ELBOW_YAW, -0.3));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_WRIST_PITCH, -0.15));
@@ -141,15 +141,15 @@ class FullBodyExtremePublisher : public rclcpp::Node {
     ret_msg.task_space_commands.push_back(
         generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE, true, 0.0, 0.0, SQUAT_HEIGHT_));
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, 0.3));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, 0.98105));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.0));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, 0.75));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, -0.541053));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_PITCH, -1.1));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_YAW, -0.3));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_WRIST_PITCH, -0.15));
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_PITCH, -1.9));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_ROLL, 1.75));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_PITCH, -2.42409));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_ROLL, 2.0944));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_YAW, -0.9));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_ELBOW_PITCH, -1.65));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_ELBOW_YAW, -0.3));
@@ -168,15 +168,15 @@ class FullBodyExtremePublisher : public rclcpp::Node {
     ret_msg.task_space_commands.push_back(
         generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE, true, 0.0, 0.0, SQUAT_HEIGHT_));
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -1.9));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.75));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -2.42409));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -2.0944));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, 0.9));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_PITCH, -1.65));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_YAW, -0.3));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_WRIST_PITCH, -0.15));
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_PITCH, -1.9));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_ROLL, 1.75));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_PITCH, -2.42409));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_ROLL, 2.0944));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_YAW, -0.9));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_ELBOW_PITCH, -1.65));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_ELBOW_YAW, -0.3));
@@ -195,16 +195,16 @@ class FullBodyExtremePublisher : public rclcpp::Node {
     ret_msg.task_space_commands.push_back(
         generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE, true, 0.0, 0.0, DEFAULT_HEIGHT_));
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, 0.3));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, 0.98105));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.0));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, 0.75));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, -0.541053));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_PITCH, -1.1));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_YAW, -0.3));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_WRIST_PITCH, -0.15));
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_PITCH, 0.3));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_PITCH, 0.98105));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_ROLL, 1.0));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_YAW, -0.75));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_YAW, 0.541053));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_ELBOW_PITCH, -1.1));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_ELBOW_YAW, -0.3));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_WRIST_PITCH, -0.15));
@@ -219,18 +219,20 @@ class FullBodyExtremePublisher : public rclcpp::Node {
     duration.sec = t;
     ret_msg.time_from_start = duration;
 
+    // the 1.0472 value is the joint limit of j_hip_z. Publishing values outside of the limits will not cause things to fail, although will
+    // result in non-smooth motions
     ret_msg.task_space_commands.push_back(
-        generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE, true, 0.0, 0.0, SQUAT_HEIGHT_, 0.0, 0.0, M_PI / 2));
+        generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE, true, 0.0, 0.0, SQUAT_HEIGHT_, 0.0, 0.0, 1.0472));
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -1.9));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.75));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -2.42409));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -2.0944));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, 0.9));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_PITCH, -1.65));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_YAW, -0.3));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_WRIST_PITCH, -0.15));
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_PITCH, -1.9));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_ROLL, 1.75));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_PITCH, -2.42409));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_ROLL, 2.0944));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_YAW, -0.9));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_ELBOW_PITCH, -1.65));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_ELBOW_YAW, -0.3));
@@ -247,18 +249,18 @@ class FullBodyExtremePublisher : public rclcpp::Node {
     ret_msg.time_from_start = duration;
 
     ret_msg.task_space_commands.push_back(
-        generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE, true, 0.0, 0.0, SQUAT_HEIGHT_, 0.0, 0.0, -M_PI / 2));
+        generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE, true, 0.0, 0.0, SQUAT_HEIGHT_, 0.0, 0.0, -1.0472));
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, 0.3));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, 0.98105));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.0));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, 0.75));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, -0.541053));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_PITCH, -1.1));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_YAW, -0.3));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_WRIST_PITCH, -0.15));
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_PITCH, 0.3));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_PITCH, 0.98105));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_ROLL, 1.0));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_YAW, -0.75));
+    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_SHOULDER_YAW, 0.541053));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_ELBOW_PITCH, -1.1));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_ELBOW_YAW, -0.3));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::LEFT_WRIST_PITCH, -0.15));
