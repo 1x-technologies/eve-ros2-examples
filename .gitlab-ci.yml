@@ -1,0 +1,4 @@
+include:
+  - project: 'halodi/tooling/gitlab-ci-cd/templates/build-with-colcon'
+    ref: 0.0.2
+    file: 'build-with-colcon-ros2foxy-colcon0.2.1.gitlab-ci.yml'
