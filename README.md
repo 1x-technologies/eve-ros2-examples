@@ -28,7 +28,7 @@ git clone https://github.com/Halodi/halodi-messages.git
 ## Building
 cd ..
 source /opt/ros/foxy/setup.bash
-colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTING=0
+colcon build
 source install/setup.bash
 ```
 
@@ -140,21 +140,23 @@ First install the cmake interfaces to clang format and tidy:
 sudo apt install ros-foxy-ament-cmake-clang-format ros-foxy-ament-cmake-clang-tidy
 ```
 
-Then clone our clang configurations into your workspace
+Then clone our clang configurations into your ros2 workspace
 
 ```bash
 cd ~/eve_ws/src
 git clone git@gitlab.com:halodi/controls/ros2/halodi-ros2-code-quality.git
 ```
 
-You then need to build again and run the test scripts, with BUILD_TESTING on:
+You then need to build again and run the test scripts, with the BUILD_HALODI_TESTS cmake argument set to ON:
 
 ```bash
 cd ~/eve_ws/
-colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTING=1
+colcon build --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_HALODI_TESTS=ON
 colcon test --packages-select eve_ros2_examples
 colcon test-result --all
 ```
+
+**NOTE** CMAKE_EXPORT_COMPILE_COMMANDS is required to be set for compatibility with the *clang_tidy* test
 
 When testing locally before pushing, you can print the test results straight to the console instead. Replace the last two lines above with the following:
 
