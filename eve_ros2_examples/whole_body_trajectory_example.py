@@ -18,6 +18,7 @@ import uuid
 
 import numpy as np
 import rclpy
+import rclpy.qos
 from action_msgs.msg import GoalStatus
 from builtin_interfaces.msg import Duration
 from halodi_msgs.msg import (
@@ -114,9 +115,13 @@ class WholeBodyTrajectoryPublisher(Node):
         super().__init__(
             "whole_body_trajectory_example"
         )  # initialize the underlying Node with the name whole_body_trajectory_example
+
         self._publisher = self.create_publisher(
-            WholeBodyTrajectory, "/eve/whole_body_trajectory", 10
-        )  # create a publisher with outbound queue size of 10
+            WholeBodyTrajectory,
+            "/eve/whole_body_trajectory",
+            self.qos_profile_latched(1),
+        )  # create a publisher with latching qos, queue size of 1
+
         self._subscriber = self.create_subscription(
             GoalStatus, "/eve/whole_body_trajectory_status", self.goal_status_cb, 10
         )  # create a GoalStatus subscriber with inbound queue size of 10
@@ -136,6 +141,14 @@ class WholeBodyTrajectoryPublisher(Node):
 
         # store periodic_trajectory_msg for re-publishing in goal_status_cb
         self._periodic_trajectory_msg = periodic_trajectory_msg
+
+    def qos_profile_latched(self, depth):
+        return rclpy.qos.QoSProfile(
+            history=rclpy.qos.QoSHistoryPolicy.RMW_QOS_POLICY_HISTORY_KEEP_LAST,
+            depth=depth,
+            durability=rclpy.qos.QoSDurabilityPolicy.RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL,
+            reliability=rclpy.qos.QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT,
+        )
 
     def goal_status_cb(self, msg):
         """GoalStatus callback. Logs/prints some statuses and re-pubishes
