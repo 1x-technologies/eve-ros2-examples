@@ -9,7 +9,7 @@ To download and compile this repository on its own follow the instructions below
 Additional dependencies:
 
 ```bash
-sudo apt install git build-essential python3-colcon-common-extensions libboost-math1.67-dev
+sudo apt install git build-essential python3-colcon-common-extensions
 ```
 
 ```bash
