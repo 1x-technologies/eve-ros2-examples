@@ -117,10 +117,8 @@ class WholeBodyTrajectoryPublisher(Node):
         )  # initialize the underlying Node with the name whole_body_trajectory_example
 
         self._publisher = self.create_publisher(
-            WholeBodyTrajectory,
-            "/eve/whole_body_trajectory",
-            self.qos_profile_latched(1),
-        )  # create a publisher with latching qos, queue size of 1
+            WholeBodyTrajectory, "/eve/whole_body_trajectory", 10
+        )
 
         self._subscriber = self.create_subscription(
             GoalStatus, "/eve/whole_body_trajectory_status", self.goal_status_cb, 10
@@ -142,13 +140,14 @@ class WholeBodyTrajectoryPublisher(Node):
         # store periodic_trajectory_msg for re-publishing in goal_status_cb
         self._periodic_trajectory_msg = periodic_trajectory_msg
 
-    def qos_profile_latched(self, depth):
-        return rclpy.qos.QoSProfile(
-            history=rclpy.qos.QoSHistoryPolicy.RMW_QOS_POLICY_HISTORY_KEEP_LAST,
-            depth=depth,
-            durability=rclpy.qos.QoSDurabilityPolicy.RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL,
-            reliability=rclpy.qos.QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_RELIABLE,
-        )
+        timer_period = 1.0  # seconds
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.status_msg_received_ever = False
+
+    def timer_callback(self):
+        if not self.status_msg_received_ever:
+            self.get_logger().info("Publishing msg from timer")
+            self._publisher.publish(self._periodic_trajectory_msg)
 
     def goal_status_cb(self, msg):
         """GoalStatus callback. Logs/prints some statuses and re-pubishes
@@ -159,6 +158,11 @@ class WholeBodyTrajectoryPublisher(Node):
 
         Returns: None
         """
+
+        if not self.status_msg_received_ever:
+            self.timer.cancel()
+            self.get_logger().info("Timer is cancelled")
+            self.status_msg_received_ever = True
 
         if msg.status == GoalStatus.STATUS_ACCEPTED:
             self.get_logger().info("Goal accepted")
