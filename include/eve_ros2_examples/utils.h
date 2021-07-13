@@ -15,9 +15,7 @@
 #pragma once
 
 #include <algorithm>
-
-#include <boost/uuid/uuid_generators.hpp>
-#include "unique_identifier_msgs/msg/uuid.hpp"
+#include <random>
 
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
@@ -30,20 +28,34 @@
 
 namespace eve_ros2_examples {
 
+/**
+ * @brief createRandomUuidMsg Create a randomly generated UUID using the c++ <random> library
+ * @return A UUID message for ROS2
+ */
 unique_identifier_msgs::msg::UUID createRandomUuidMsg() {
-  // Create a random uuid to track msgs
-  boost::uuids::random_generator gen;
-  boost::uuids::uuid u = gen();
-  unique_identifier_msgs::msg::UUID uuid_msg;
-  std::array<uint8_t, 16> uuid{};
-  std::copy(std::begin(u.data), std::end(u.data), uuid.begin());
-  uuid_msg.uuid = uuid;
-  return uuid_msg;
+
+    std::random_device rd;
+    std::default_random_engine gen(rd());
+    std::uniform_int_distribution<> dis(0, 255);
+
+    unique_identifier_msgs::msg::UUID uuid_msg;
+    std::array<uint8_t, 16> uuid{};
+    for(int i = 0; i < 16; i++)
+    {
+        uuid[i] = dis(gen);
+    }
+    uuid_msg.uuid = uuid;
+    return uuid_msg;
 }
 
-/*
-This generates the individual single joint command
-*/
+/**
+ * @brief generateJointSpaceCommand This generates the individual single joint command
+ * @param joint_id Joint name identifier
+ * @param q_des Desired angle
+ * @param qd_des Desired velocity
+ * @param qdd_des Desired acceleration
+ * @return JointSpaceCommand message
+ */
 halodi_msgs::msg::JointSpaceCommand generateJointSpaceCommand(int32_t joint_id, double q_des, double qd_des = 0.0, double qdd_des = 0.0) {
   halodi_msgs::msg::JointSpaceCommand ret_msg;
   halodi_msgs::msg::JointName name;

@@ -18,6 +18,7 @@
 
 #include "action_msgs/msg/goal_status.hpp"
 #include "eve_ros2_examples/utils.h"
+#include <chrono>
 
 namespace eve_ros2_examples {
 
@@ -26,49 +27,61 @@ using halodi_msgs::msg::WholeBodyTrajectory;
 using halodi_msgs::msg::WholeBodyTrajectoryPoint;
 using std::placeholders::_1;
 
+ using namespace std::chrono_literals;
+
 class DefaultPosePublisher : public rclcpp::Node {
  public:
   DefaultPosePublisher() : Node("default_pose_publisher") {
-    // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when
-    // publishTrajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
-    rclcpp::QoS latching_qos(1);
-    latching_qos.transient_local();
 
     // set up publisher to trajectory topic
-    publisher_ = this->create_publisher<halodi_msgs::msg::WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
+    publisher_ = this->create_publisher<halodi_msgs::msg::WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10,
                                                                             std::bind(&DefaultPosePublisher::statusCallback, this, _1));
 
-    // send the first trajectory command. The subscriber will send the commands again using the logic in statusCallback(msg)
+
+
+    // Create a UUID for the first message.
     uuidMsg_ = createRandomUuidMsg();
-    publishTrajectory(uuidMsg_);
+
+    // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent immediatly arrives at the trajectory manager.
+    // Therefore, we use a timer and send the message every second till it it is accepted.
+    timer = this->create_wall_timer(1000ms, [this](){
+        publishTrajectory(uuidMsg_);
+    });
+
+
   }
 
  private:
-  void timerCallback() {
-    // send the first trajectory command. The subscriber will send the commands again using the logic in statusCallback(msg)
-    uuidMsg_ = createRandomUuidMsg();
-    publishTrajectory(uuidMsg_);
-  }
+  rclcpp::TimerBase::SharedPtr timer;
 
   void statusCallback(action_msgs::msg::GoalStatus::SharedPtr msg) {
-    switch (msg->status) {
-      case 1:
-        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
-        break;
-      case 2:
-        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_EXECUTING");
-        break;
-      case 4:
-        // after the robot has returned to the default pose, we shutdown the node
-        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
-        RCLCPP_INFO(this->get_logger(), "Shutting down...");
-        rclcpp::shutdown();
-        break;
-      default:
-        break;
+
+    // Check if the trajectory message accepted our message.
+    // If you know for sure you only have one publisher, you can ignore the UUID and just accept the message.
+    if(msg->goal_info.goal_id.uuid == uuidMsg_.uuid)
+    {
+        // Our message is accepted, we can cancel the timer now.
+        timer->cancel();
+
+        switch (msg->status) {
+          case 1:
+            RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
+            break;
+          case 2:
+            RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_EXECUTING");
+            break;
+          case 4:
+            // after the robot has returned to the default pose, we shutdown the node
+            RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
+            RCLCPP_INFO(this->get_logger(), "Shutting down...");
+            rclcpp::shutdown();
+            break;
+          default:
+            break;
+        }
     }
   }
 

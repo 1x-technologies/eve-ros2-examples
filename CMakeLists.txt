@@ -27,7 +27,6 @@ find_package(tf2_geometry_msgs REQUIRED)
 ###########
 include_directories(
   include
-  ${Boost_INCLUDE_DIRS}
 )
 
 add_executable(default_pose src/trajectory_publishers/default_pose.cpp)
