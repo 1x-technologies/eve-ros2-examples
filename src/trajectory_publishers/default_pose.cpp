@@ -44,7 +44,7 @@ class DefaultPosePublisher : public rclcpp::Node {
 
     // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent immediatly arrives at the
     // trajectory manager. Therefore, we use a timer and send the message every second till it it is accepted.
-    timer = this->create_wall_timer(1000ms, [this]() { publishTrajectory(uuidMsg_); });
+    timer_ = this->create_wall_timer(1000ms, [this]() { publishTrajectory(uuidMsg_); });
   }
 
  private:
@@ -53,7 +53,7 @@ class DefaultPosePublisher : public rclcpp::Node {
     // If you know for sure you only have one publisher, you can ignore the UUID and just accept the message.
     if (msg->goal_info.goal_id.uuid == uuidMsg_.uuid) {
       // Our message is accepted, we can cancel the timer now.
-      timer->cancel();
+      timer_->cancel();
 
       switch (msg->status) {
         case 1:
@@ -83,7 +83,7 @@ class DefaultPosePublisher : public rclcpp::Node {
   rclcpp::Publisher<halodi_msgs::msg::WholeBodyTrajectory>::SharedPtr publisher_;
   rclcpp::Subscription<action_msgs::msg::GoalStatus>::SharedPtr subscription_;
   unique_identifier_msgs::msg::UUID uuidMsg_;
-  rclcpp::TimerBase::SharedPtr timer;
+  rclcpp::TimerBase::SharedPtr timer_;
 };
 
 }  // namespace eve_ros2_examples

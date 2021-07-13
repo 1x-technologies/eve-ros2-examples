@@ -44,7 +44,7 @@ using std::placeholders::_1;
 
 class NeckUpDownPublisher : public rclcpp::Node {
  public:
-  NeckUpDownPublisher() : Node("task_space_trajectory_publisher") {
+  NeckUpDownPublisher() : Node("neck_up_down_publisher") {
     // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when
     // publishTrajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
     rclcpp::QoS latching_qos(1);
@@ -54,32 +54,38 @@ class NeckUpDownPublisher : public rclcpp::Node {
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10,
                                                                             std::bind(&NeckUpDownPublisher::statusCallback, this, _1));
 
-    // Send the first trajectory command. The subscriber will send additional commands to loop the same command in the subscriber
-    // statusCallback
+    // Create a UUID for the first message.
     uuidMsg_ = createRandomUuidMsg();
-    publishTrajectory(uuidMsg_);
+
+    // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent immediatly arrives at the
+    // trajectory manager. Therefore, we use a timer and send the message every second till it it is accepted.
+    timer_ = this->create_wall_timer(1000ms, [this]() { publishTrajectory(uuidMsg_); });
   }
 
  private:
-  void statusCallback(const action_msgs::msg::GoalStatus::SharedPtr msg) const {
-    switch (msg->status) {
-      case 1:
-        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
-        break;
-      case 2:
-        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_EXECUTING");
-        break;
-      case 4:
-        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
-        // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send
-        // another command
-        if (msg->goal_info.goal_id.uuid == uuidMsg_.uuid) {
+  void statusCallback(const action_msgs::msg::GoalStatus::SharedPtr msg) {
+    // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send
+    // another command
+    if (msg->goal_info.goal_id.uuid == uuidMsg_.uuid) {
+      // Our message is accepted, we can cancel the timer now.
+      timer_->cancel();
+
+      switch (msg->status) {
+        case 1:
+          RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
+          break;
+        case 2:
+          RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_EXECUTING");
+          break;
+        case 4:
+          RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
+
           uuidMsg_ = createRandomUuidMsg();
           publishTrajectory(uuidMsg_);
-        }
-        break;
-      default:
-        break;
+          break;
+        default:
+          break;
+      }
     }
   }
 
@@ -108,7 +114,8 @@ class NeckUpDownPublisher : public rclcpp::Node {
 
   rclcpp::Publisher<WholeBodyTrajectory>::SharedPtr publisher_;
   rclcpp::Subscription<action_msgs::msg::GoalStatus>::SharedPtr subscription_;
-  mutable unique_identifier_msgs::msg::UUID uuidMsg_;
+  unique_identifier_msgs::msg::UUID uuidMsg_;
+  rclcpp::TimerBase::SharedPtr timer_;
 };
 
 }  // namespace eve_ros2_examples

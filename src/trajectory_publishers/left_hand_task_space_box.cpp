@@ -39,7 +39,6 @@
 #include "eve_ros2_examples/utils.h"
 namespace eve_ros2_examples {
 
-using namespace std::chrono_literals;
 using halodi_msgs::msg::ReferenceFrameName;
 using halodi_msgs::msg::TaskSpaceCommand;
 using halodi_msgs::msg::TrajectoryInterpolation;
@@ -47,44 +46,46 @@ using halodi_msgs::msg::WholeBodyTrajectory;
 using halodi_msgs::msg::WholeBodyTrajectoryPoint;
 using std::placeholders::_1;
 
+using namespace std::chrono_literals;
+
 class LeftHandTaskSpaceBoxPublisher : public rclcpp::Node {
  public:
-  LeftHandTaskSpaceBoxPublisher() : Node("task_space_trajectory_publisher") {
-    // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when
-    // publishTrajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
-    rclcpp::QoS latching_qos(1);
-    latching_qos.transient_local();
-
-    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
+  LeftHandTaskSpaceBoxPublisher() : Node("left_hand_task_space_box_publisher") {
+    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(
         "/eve/whole_body_trajectory_status", 10, std::bind(&LeftHandTaskSpaceBoxPublisher::statusCallback, this, _1));
 
-    // Send the first trajectory command. The subscriber will send additional commands to loop the same command in the subscriber
-    // statusCallback
+    // Create a UUID for the first message.
     uuidMsg_ = createRandomUuidMsg();
-    publishTrajectory(uuidMsg_);
+
+    // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent immediatly arrives at the
+    // trajectory manager. Therefore, we use a timer and send the message every second till it it is accepted.
+    timer_ = this->create_wall_timer(1000ms, [this]() { publishTrajectory(uuidMsg_); });
   }
 
  private:
-  void statusCallback(const action_msgs::msg::GoalStatus::SharedPtr msg) const {
-    switch (msg->status) {
-      case 1:
-        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
-        break;
-      case 2:
-        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_EXECUTING");
-        break;
-      case 4:
-        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
-        // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send
-        // another command
-        if (msg->goal_info.goal_id.uuid == uuidMsg_.uuid) {
+  void statusCallback(const action_msgs::msg::GoalStatus::SharedPtr msg) {
+    // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send
+    // another command
+    if (msg->goal_info.goal_id.uuid == uuidMsg_.uuid) {
+      timer_->cancel();
+
+      switch (msg->status) {
+        case 1:
+          RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
+          break;
+        case 2:
+          RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_EXECUTING");
+          break;
+        case 4:
+          RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
+
           uuidMsg_ = createRandomUuidMsg();
           publishTrajectory(uuidMsg_);
-        }
-        break;
-      default:
-        break;
+          break;
+        default:
+          break;
+      }
     }
   }
 
@@ -145,7 +146,8 @@ class LeftHandTaskSpaceBoxPublisher : public rclcpp::Node {
   const double pi_ = boost::math::constants::pi<double>();
   rclcpp::Publisher<WholeBodyTrajectory>::SharedPtr publisher_;
   rclcpp::Subscription<action_msgs::msg::GoalStatus>::SharedPtr subscription_;
-  mutable unique_identifier_msgs::msg::UUID uuidMsg_;
+  unique_identifier_msgs::msg::UUID uuidMsg_;
+  rclcpp::TimerBase::SharedPtr timer_;
 };
 
 }  // namespace eve_ros2_examples

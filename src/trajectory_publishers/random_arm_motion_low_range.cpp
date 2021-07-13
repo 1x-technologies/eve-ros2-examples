@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <random>
@@ -29,56 +30,57 @@ using halodi_msgs::msg::JointName;
 using halodi_msgs::msg::WholeBodyTrajectoryPoint;
 using std::placeholders::_1;
 
+using namespace std::chrono_literals;
+
 const int TIME_INCREMENT_ = 3;
 const int NUM_TARGETS = 10;
 
 class RandomArmMotionLowRangePublisher : public rclcpp::Node {
  public:
   RandomArmMotionLowRangePublisher() : Node("random_trajectory_publisher") {
-    // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when
-    // publishTrajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
-    rclcpp::QoS latching_qos(1);
-    latching_qos.transient_local();
-
-    // set up publisher to trajectory topic
-    publisher_ = this->create_publisher<halodi_msgs::msg::WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
+    publisher_ = this->create_publisher<halodi_msgs::msg::WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(
         "/eve/whole_body_trajectory_status", 10, std::bind(&RandomArmMotionLowRangePublisher::statusCallback, this, _1));
 
-    // send the first trajectory command. The subscriber will send the commands again using the logic in statusCallback(msg)
+    genRandomJointTargets();
+
+    // Create a UUID for the first message.
     uuidMsg_ = createRandomUuidMsg();
 
-    genRandomNumbers();
-    publishTrajectory(uuidMsg_);
+    // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent immediatly arrives at the
+    // trajectory manager. Therefore, we use a timer and send the message every second till it it is accepted.
+    timer_ = this->create_wall_timer(1000ms, [this]() { publishTrajectory(uuidMsg_); });
   }
 
  private:
   void statusCallback(action_msgs::msg::GoalStatus::SharedPtr msg) {
-    switch (msg->status) {
-      case 1:
-        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
-        break;
-      case 2:
-        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_EXECUTING");
-        break;
-      case 4:
-        RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
-        // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send
-        // another command
-        if (msg->goal_info.goal_id.uuid == uuidMsg_.uuid) {
+    // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send
+    // another command
+    if (msg->goal_info.goal_id.uuid == uuidMsg_.uuid) {
+      // Our message is accepted, we can cancel the timer now.
+      timer_->cancel();
+
+      switch (msg->status) {
+        case 1:
+          RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_ACCEPTED");
+          break;
+        case 2:
+          RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_EXECUTING");
+          break;
+        case 4:
+          RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
           uuidMsg_ = createRandomUuidMsg();
-          // genRandomNumbers();
           publishTrajectory(uuidMsg_);
-        }
-        break;
-      default:
-        break;
+          break;
+        default:
+          break;
+      }
     }
   }
 
-  void genRandomNumbers() {
+  void genRandomJointTargets() {
     std::default_random_engine generator;
     // std::normal_distribution<double> distribution(0.0,0.05);
     std::uniform_real_distribution<> distribution(-0.2, 0.2);
@@ -167,6 +169,7 @@ class RandomArmMotionLowRangePublisher : public rclcpp::Node {
   unique_identifier_msgs::msg::UUID uuidMsg_;
   std::vector<double> trajPointDefault_;
   std::vector<std::vector<double>> trajPoints_;
+  rclcpp::TimerBase::SharedPtr timer_;
 };
 
 }  // namespace eve_ros2_examples
