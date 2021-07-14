@@ -9,7 +9,7 @@ To download and compile this repository on its own follow the instructions below
 Additional dependencies:
 
 ```bash
-sudo apt install git build-essential python3-colcon-common-extensions
+sudo apt install git build-essential python3-colcon-common-extensions python-scipy
 ```
 
 ```bash
