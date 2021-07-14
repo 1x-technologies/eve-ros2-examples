@@ -124,6 +124,10 @@ ros2 run eve_ros2_examples full_body_extreme
 
 This trajectory publisher example exhibits a full body motion that we use to test behaviour during the robot bringup procedure. This provides a good reference for constructing a ros2 node in python, and for how to fill out the appropriate ros2 msgs.
 
+```bash
+ros2 run eve_ros2_examples whole_body_robot_bringup.py
+```
+
 ### Whole body state subscriber
 
 This example shows how to subscribe to the latest estimate of Eve's state, on the */whole_body_state* topic. The most notable element here is the configuration of the [QoS profile](https://docs.ros.org/en/foxy/Concepts/About-Quality-of-Service-Settings.html) which in the case of this topic has reliability set to *Best effort*.
