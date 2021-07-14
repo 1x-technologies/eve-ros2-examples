@@ -110,7 +110,7 @@ Run the example using the following:
 ros2 run eve_ros2_examples drive_and_turn
 ```
 
-### Full body extreme motions
+### Full body extreme motion
 
 **Do not run this example if the robot is tethered tightly AND if you cannot quickly kill the node!!**
 This example makes Eve move her whole body via a sequence of arm joints and pelvis height trajectories. The motions are rapid and engage the end stops of some joints. This example is intended for exploring the response of the balancing controller.
@@ -119,6 +119,10 @@ Run the example using the following:
 ```bash
 ros2 run eve_ros2_examples full_body_extreme
 ```
+
+### Robot bringup example (PYTHON)
+
+This trajectory publisher example exhibits a full body motion that we use to test behaviour during the robot bringup procedure. This provides a good reference for constructing a ros2 node in python, and for how to fill out the appropriate ros2 msgs.
 
 ### Whole body state subscriber
 

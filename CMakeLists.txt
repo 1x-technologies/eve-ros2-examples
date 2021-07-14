@@ -98,7 +98,7 @@ endif()
 #############
 ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
-  ${PROJECT_NAME}/whole_body_trajectory_example.py
+  ${PROJECT_NAME}/whole_body_robot_bringup.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
