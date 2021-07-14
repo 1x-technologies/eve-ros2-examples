@@ -15,9 +15,7 @@
 #pragma once
 
 #include <algorithm>
-
-#include <boost/uuid/uuid_generators.hpp>
-#include "unique_identifier_msgs/msg/uuid.hpp"
+#include <random>
 
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
@@ -30,20 +28,32 @@
 
 namespace eve_ros2_examples {
 
+/**
+ * @brief createRandomUuidMsg Create a randomly generated UUID using the c++ <random> library
+ * @return A UUID message for ROS2
+ */
 unique_identifier_msgs::msg::UUID createRandomUuidMsg() {
-  // Create a random uuid to track msgs
-  boost::uuids::random_generator gen;
-  boost::uuids::uuid u = gen();
+  std::random_device rd;
+  std::default_random_engine gen(rd());
+  std::uniform_int_distribution<> dis(0, 255);
+
   unique_identifier_msgs::msg::UUID uuid_msg;
   std::array<uint8_t, 16> uuid{};
-  std::copy(std::begin(u.data), std::end(u.data), uuid.begin());
+  for (int i = 0; i < 16; i++) {
+    uuid[i] = dis(gen);
+  }
   uuid_msg.uuid = uuid;
   return uuid_msg;
 }
 
-/*
-This generates the individual single joint command
-*/
+/**
+ * @brief generateJointSpaceCommand This generates the individual single joint command
+ * @param [in] joint_id Joint name identifier
+ * @param [in] q_des Desired angle
+ * @param [in] qd_des Desired velocity
+ * @param [in] qdd_des Desired acceleration
+ * @return JointSpaceCommand message
+ */
 halodi_msgs::msg::JointSpaceCommand generateJointSpaceCommand(int32_t joint_id, double q_des, double qd_des = 0.0, double qdd_des = 0.0) {
   halodi_msgs::msg::JointSpaceCommand ret_msg;
   halodi_msgs::msg::JointName name;
@@ -56,9 +66,19 @@ halodi_msgs::msg::JointSpaceCommand generateJointSpaceCommand(int32_t joint_id, 
   return ret_msg;
 }
 
-/*
-This generates an individual task space command
-*/
+/**
+ * @brief generateTaskSpaceCommand This generates the individual single task command
+ * @param [in] body_frame_id Body frame id
+ * @param [in] expressed_in_frame_id Expressed in frame id
+ * @param [in] use_z_up Use z-up or not
+ * @param [in] px_des Desired x position
+ * @param [in] py_des Desired y position
+ * @param [in] pz_des Desired z position
+ * @param [in] roll_des Desired roll
+ * @param [in] pitch_des Desired pitch
+ * @param [in] yaw_des Desired yaw
+ * @return TaskSpaceCommand message
+ */
 halodi_msgs::msg::TaskSpaceCommand generateTaskSpaceCommand(int32_t body_frame_id, int32_t expressed_in_frame_id, bool use_z_up,
                                                             double px_des, double py_des, double pz_des, double roll_des = 0.0,
                                                             double pitch_des = 0.0, double yaw_des = 0.0) {
@@ -87,6 +107,11 @@ halodi_msgs::msg::TaskSpaceCommand generateTaskSpaceCommand(int32_t body_frame_i
   return ret_msg;
 }
 
+/**
+ * @brief genDefaultTarget Generate a whole body target with default angles for each joint
+ * @param [in] t Time in seconds
+ * @return WholeBodyTrajectoryPoint message
+ */
 halodi_msgs::msg::WholeBodyTrajectoryPoint genDefaultTarget(int32_t t) {
   halodi_msgs::msg::WholeBodyTrajectoryPoint ret_msg;
 
@@ -125,12 +150,16 @@ halodi_msgs::msg::WholeBodyTrajectoryPoint genDefaultTarget(int32_t t) {
   return ret_msg;
 }
 
-/*
-The target, in the form of a single WholeBodyTrajectoryPoint msg, consists of a concatenation of a desired pelvis pose (Task Space) and
-desired joint configurations for the arms, with no more than one desired value per joint.
-
-The desired time at which we want to reach the target is also specified.
-*/
+/**
+ * @brief genTarget Generate a whole body msg with default angles for each joint
+ *
+ * The target, in the form of a single WholeBodyTrajectoryPoint msg, consists of a concatenation of a desired pelvis pose (Task Space) and
+ * desired joint configurations for the arms, with no more than one desired value per joint. The desired time at which we want to reach the
+ * target is also specified.
+ *
+ * @param [in] uuid_msg The UUID of the message
+ * @return WholeBodyTrajectory message with a single point decribing default pose
+ */
 halodi_msgs::msg::WholeBodyTrajectory genDefaultMsg(unique_identifier_msgs::msg::UUID uuid_msg = createRandomUuidMsg()) {
   // begin construction of the publsihed msg
   halodi_msgs::msg::WholeBodyTrajectory trajectory_msg;
