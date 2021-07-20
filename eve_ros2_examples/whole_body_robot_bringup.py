@@ -113,8 +113,8 @@ class WholeBodyTrajectoryPublisher(Node):
 
     def __init__(self, initial_trajectory_msg=None, periodic_trajectory_msg=None):
         super().__init__(
-            "whole_body_trajectory_example"
-        )  # initialize the underlying Node with the name whole_body_trajectory_example
+            "whole_body_robot_bringup"
+        )  # initialize the underlying Node with the name whole_body_robot_bringup
 
         self._publisher = self.create_publisher(
             WholeBodyTrajectory, "/eve/whole_body_trajectory", 10
