@@ -4,7 +4,7 @@ A ROS2 package full of C++ examples that show the usage of all of EVE's ROS2 API
 
 ## Download and Build
 
-To download and compile this repository on its own follow the instructions below. You will first require at least the base install of [ros2](https://docs.ros.org/en/foxy/Installation/Linux-Install-Debians.html).
+To download and compile this repository on its own follow the instructions below. You will first require at least the base install of [ros2](https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html).
 
 Additional dependencies:
 
@@ -27,7 +27,7 @@ git clone https://github.com/Halodi/halodi-messages.git
 
 ## Building
 cd ..
-source /opt/ros/foxy/setup.bash
+source /opt/ros/galactic/setup.bash
 colcon build
 source install/setup.bash
 ```
@@ -130,7 +130,7 @@ ros2 run eve_ros2_examples whole_body_robot_bringup.py
 
 ### Whole body state subscriber
 
-This example shows how to subscribe to the latest estimate of Eve's state, on the */whole_body_state* topic. The most notable element here is the configuration of the [QoS profile](https://docs.ros.org/en/foxy/Concepts/About-Quality-of-Service-Settings.html) which in the case of this topic has reliability set to *Best effort*.
+This example shows how to subscribe to the latest estimate of Eve's state, on the */whole_body_state* topic. The most notable element here is the configuration of the [QoS profile](https://docs.ros.org/en/galactic/Concepts/About-Quality-of-Service-Settings.html) which in the case of this topic has reliability set to *Best effort*.
 Run the example using the following:
 
 ```bash
@@ -142,13 +142,7 @@ ros2 run eve_ros2_examples whole_body_state_subscriber
 In order to test the code in this repository or new code that you want to contribute, you must first run and pass a number of given tests that are specified in the CMakeLists.txt file
 These tests include a mixture of formatting a linting tools that span the c++ and python languages.
 
-First install the cmake interfaces to clang format and tidy:
-
-```bash
-sudo apt install ros-foxy-ament-cmake-clang-format ros-foxy-ament-cmake-clang-tidy
-```
-
-Then clone our clang configurations into your ros2 workspace
+Clone our clang configurations into your ros2 workspace
 
 ```bash
 cd ~/eve_ws/src
