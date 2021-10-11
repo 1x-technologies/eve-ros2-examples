@@ -39,8 +39,6 @@ class DriveAndTurnPublisher : public rclcpp::Node {
     message.filter_driving_command = false;
     message.linear_velocity = 1.0;
     message.angular_velocity = 3.0;
-    RCLCPP_INFO(this->get_logger(), "DrivingCommand: linear_velocity: '%f', angular_velocity: '%f'", message.linear_velocity,
-                message.angular_velocity);
     publisher_->publish(message);
   }
   rclcpp::TimerBase::SharedPtr timer_;
