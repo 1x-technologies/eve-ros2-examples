@@ -47,6 +47,13 @@ qtcreator-*
 # Emacs
 .#*
 
+# vscode stuff
+.vscode/*
+
+# Clang format and clang tidy configurations
+.clang-format
+.clang-tidy
+
 # Catkin custom files
 CATKIN_IGNORE
 

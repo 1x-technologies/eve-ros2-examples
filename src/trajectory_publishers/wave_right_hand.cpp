@@ -42,8 +42,9 @@ using namespace std::chrono_literals;
 class WaveRightHandPublisher : public rclcpp::Node {
  public:
   WaveRightHandPublisher() : Node("waving_hand_trajectory_publisher") {
-    // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is not up when
-    // publishTrajectory is called the first time. Note: If the trajectory manager starts after this node, it'll execute immediatly.
+    // Create a latching QoS to make sure the first message arrives at the trajectory manager, even if the connection is
+    // not up when publishTrajectory is called the first time. Note: If the trajectory manager starts after this node,
+    // it'll execute immediatly.
     rclcpp::QoS latching_qos(1);
     latching_qos.transient_local();
 
@@ -51,21 +52,22 @@ class WaveRightHandPublisher : public rclcpp::Node {
     publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
 
     // subscribe to the tractory status topic
-    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10,
-                                                                            std::bind(&WaveRightHandPublisher::statusCallback, this, _1));
+    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(
+        "/eve/whole_body_trajectory_status", 10, std::bind(&WaveRightHandPublisher::statusCallback, this, _1));
 
     // Create a UUID for the first message.
     uuidMsg_ = createRandomUuidMsg();
 
-    // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent immediatly arrives at the
-    // trajectory manager. Therefore, we use a timer and send the message every second till it it is accepted.
+    // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent
+    // immediatly arrives at the trajectory manager. Therefore, we use a timer and send the message every second till it
+    // it is accepted.
     timer_ = this->create_wall_timer(1000ms, [this]() { publishTrajectory(uuidMsg_); });
   }
 
  private:
   void statusCallback(action_msgs::msg::GoalStatus::SharedPtr msg) {
-    // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send
-    // another command
+    // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out,
+    // let's send another command
     if (msg->goal_info.goal_id.uuid == uuidMsg_.uuid) {
       // Our message is accepted, we can cancel the timer now.
       timer_->cancel();
@@ -108,8 +110,8 @@ class WaveRightHandPublisher : public rclcpp::Node {
   }
 
   /*
-  Each target, in the form of a single WholeBodyTrajectoryPoint msg, consists of a concatenation of desired joint configurations,
-  with no more than one desired value per joint.
+  Each target, in the form of a single WholeBodyTrajectoryPoint msg, consists of a concatenation of desired joint
+  configurations, with no more than one desired value per joint.
 
   The desired time at which we want to reach these joint targets is also specified.
   */

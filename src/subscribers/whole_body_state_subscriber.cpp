@@ -36,8 +36,8 @@ class WholeBodyStateSubscriber : public rclcpp::Node {
 
  private:
   void topicCallback(const halodi_msgs::msg::WholeBodyState::SharedPtr msg) const {
-    RCLCPP_INFO(this->get_logger(), "The robot pelvis is at postion: %.3f, %.3f, %.3f in world frame", msg->pose.position.x,
-                msg->pose.position.y, msg->pose.position.z);
+    RCLCPP_INFO(this->get_logger(), "The robot pelvis is at postion: %.3f, %.3f, %.3f in world frame",
+                msg->pose.position.x, msg->pose.position.y, msg->pose.position.z);
   }
   rclcpp::Subscription<halodi_msgs::msg::WholeBodyState>::SharedPtr subscription_;
 };

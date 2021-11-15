@@ -58,15 +58,16 @@ class LeftHandTaskSpaceBoxPublisher : public rclcpp::Node {
     // Create a UUID for the first message.
     uuidMsg_ = createRandomUuidMsg();
 
-    // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent immediatly arrives at the
-    // trajectory manager. Therefore, we use a timer and send the message every second till it it is accepted.
+    // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent
+    // immediatly arrives at the trajectory manager. Therefore, we use a timer and send the message every second till it
+    // it is accepted.
     timer_ = this->create_wall_timer(1000ms, [this]() { publishTrajectory(uuidMsg_); });
   }
 
  private:
   void statusCallback(const action_msgs::msg::GoalStatus::SharedPtr msg) {
-    // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send
-    // another command
+    // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out,
+    // let's send another command
     if (msg->goal_info.goal_id.uuid == uuidMsg_.uuid) {
       timer_->cancel();
 
@@ -106,8 +107,8 @@ class LeftHandTaskSpaceBoxPublisher : public rclcpp::Node {
     publisher_->publish(trajectory_msg);
   }
 
-  void addHandTarget(WholeBodyTrajectory* trajectory, int32_t t, double x, double y, double z, double yaw, double pitch, double roll,
-                     ReferenceFrameName::_frame_id_type frame) const {
+  void addHandTarget(WholeBodyTrajectory* trajectory, int32_t t, double x, double y, double z, double yaw, double pitch,
+                     double roll, ReferenceFrameName::_frame_id_type frame) const {
     WholeBodyTrajectoryPoint target;
     TaskSpaceCommand hand_command;
 
@@ -133,7 +134,8 @@ class LeftHandTaskSpaceBoxPublisher : public rclcpp::Node {
     pose.orientation = quat_msg;
     hand_command.pose = pose;
 
-    // We specify the desired time at which the hand should be at its target. Time is seconds after the start of the trajectory
+    // We specify the desired time at which the hand should be at its target. Time is seconds after the start of the
+    // trajectory
     builtin_interfaces::msg::Duration duration;
     duration.sec = t;
     target.time_from_start = duration;

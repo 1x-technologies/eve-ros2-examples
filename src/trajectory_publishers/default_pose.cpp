@@ -36,14 +36,15 @@ class DefaultPosePublisher : public rclcpp::Node {
     publisher_ = this->create_publisher<halodi_msgs::msg::WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
 
     // subscribe to the tractory status topic
-    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10,
-                                                                            std::bind(&DefaultPosePublisher::statusCallback, this, _1));
+    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(
+        "/eve/whole_body_trajectory_status", 10, std::bind(&DefaultPosePublisher::statusCallback, this, _1));
 
     // Create a UUID for the first message.
     uuidMsg_ = createRandomUuidMsg();
 
-    // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent immediatly arrives at the
-    // trajectory manager. Therefore, we use a timer and send the message every second till it it is accepted.
+    // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent
+    // immediatly arrives at the trajectory manager. Therefore, we use a timer and send the message every second till it
+    // it is accepted.
     timer_ = this->create_wall_timer(1000ms, [this]() { publishTrajectory(uuidMsg_); });
   }
 
