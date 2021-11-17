@@ -44,21 +44,22 @@ class FullBodyExtremePublisher : public rclcpp::Node {
     publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
 
     // subscribe to the tractory status topic
-    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>("/eve/whole_body_trajectory_status", 10,
-                                                                            std::bind(&FullBodyExtremePublisher::statusCallback, this, _1));
+    subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(
+        "/eve/whole_body_trajectory_status", 10, std::bind(&FullBodyExtremePublisher::statusCallback, this, _1));
 
     // Create a UUID for the first message.
     uuidMsg_ = createRandomUuidMsg();
 
-    // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent immediatly arrives at the
-    // trajectory manager. Therefore, we use a timer and send the message every second till it it is accepted.
+    // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent
+    // immediatly arrives at the trajectory manager. Therefore, we use a timer and send the message every second till it
+    // it is accepted.
     timer_ = this->create_wall_timer(1000ms, [this]() { publishTrajectory(uuidMsg_); });
   }
 
  private:
   void statusCallback(action_msgs::msg::GoalStatus::SharedPtr msg) {
-    // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out, let's send
-    // another command
+    // If the uuid of the received GoalStatus STATUS_SUCCEEDED Msg is the same as the uuid of the command we sent out,
+    // let's send another command
     if (msg->goal_info.goal_id.uuid == uuidMsg_.uuid) {
       // Our message is accepted, we can cancel the timer now.
       timer_->cancel();
@@ -196,8 +197,8 @@ class FullBodyExtremePublisher : public rclcpp::Node {
     duration.sec = t;
     ret_msg.time_from_start = duration;
 
-    ret_msg.task_space_commands.push_back(
-        generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE, true, 0.0, 0.0, DEFAULT_HEIGHT_));
+    ret_msg.task_space_commands.push_back(generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE,
+                                                                   true, 0.0, 0.0, DEFAULT_HEIGHT_));
 
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, 0.98105));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.0));
@@ -223,10 +224,10 @@ class FullBodyExtremePublisher : public rclcpp::Node {
     duration.sec = t;
     ret_msg.time_from_start = duration;
 
-    // the 1.0472 value is the joint limit of j_hip_z. Publishing values outside of the limits will not cause things to fail, although will
-    // result in non-smooth motions
-    ret_msg.task_space_commands.push_back(
-        generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE, true, 0.0, 0.0, SQUAT_HEIGHT_, 0.0, 0.0, 1.0472));
+    // the 1.0472 value is the joint limit of j_hip_z. Publishing values outside of the limits will not cause things to
+    // fail, although will result in non-smooth motions
+    ret_msg.task_space_commands.push_back(generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE,
+                                                                   true, 0.0, 0.0, SQUAT_HEIGHT_, 0.0, 0.0, 1.0472));
 
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -2.42409));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -2.0944));
@@ -252,8 +253,8 @@ class FullBodyExtremePublisher : public rclcpp::Node {
     duration.sec = t;
     ret_msg.time_from_start = duration;
 
-    ret_msg.task_space_commands.push_back(
-        generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE, true, 0.0, 0.0, SQUAT_HEIGHT_, 0.0, 0.0, -1.0472));
+    ret_msg.task_space_commands.push_back(generateTaskSpaceCommand(ReferenceFrameName::PELVIS, ReferenceFrameName::BASE,
+                                                                   true, 0.0, 0.0, SQUAT_HEIGHT_, 0.0, 0.0, -1.0472));
 
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, 0.98105));
     ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.0));

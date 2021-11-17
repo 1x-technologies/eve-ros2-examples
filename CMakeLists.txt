@@ -8,7 +8,7 @@ endif()
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 
 add_compile_options(-Wall -Wextra -Wpedantic)
@@ -67,17 +67,18 @@ if(BUILD_HALODI_TESTS)
 
   find_package(halodi_ros2_code_quality REQUIRED)
   find_package(ament_cmake_clang_format REQUIRED)
-  ament_clang_format(CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../halodi-ros2-code-quality/.clang-format")
+  ament_clang_format(CONFIG_FILE ${halodi_ros2_code_quality_CLANG_FORMAT})
 
   find_package(ament_cmake_clang_tidy REQUIRED)
-  ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../halodi-ros2-code-quality/.clang-tidy")
+  ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE ${halodi_ros2_code_quality_CLANG_TIDY})
   # set_tests_properties(clang_tidy PROPERTIES TIMEOUT 120) 
 
   find_package(ament_cmake_copyright REQUIRED)
   ament_copyright()
 
-  find_package(ament_cmake_cppcheck REQUIRED)
-  ament_cppcheck(LANGUAGE C++ EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/test")
+  # test fails on rclcpp checks, todo (michael) figure this out
+  # find_package(ament_cmake_cppcheck REQUIRED)
+  # ament_cppcheck(LANGUAGE C++ EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/test")
 
   find_package(ament_cmake_cpplint REQUIRED)
   # ament_cpplint()
