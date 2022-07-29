@@ -8,4 +8,5 @@
 	branch = main
 [submodule "ci_ws/src/halodi-cpp-utils"]
 	path = ci_ws/src/halodi-cpp-utils
-	url = git@gitlab.com:halodi/controls/ros2/halodi-cpp-utils.git
+	url = ../halodi-cpp-utils.git
+	branch = main
