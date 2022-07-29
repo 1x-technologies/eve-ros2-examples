@@ -21,49 +21,90 @@ find_package(action_msgs REQUIRED)
 find_package(halodi_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(halodi_utils REQUIRED)
 
-###########
-## Build ##
-###########
+set(dependencies
+  rclcpp
+  std_msgs
+  action_msgs
+  halodi_msgs
+  tf2
+  tf2_geometry_msgs
+  halodi_utils
+)
+
+# ##########
+# # Build ##
+# ##########
 include_directories(
   include
 )
 
-add_executable(default_pose src/trajectory_publishers/default_pose.cpp)
-ament_target_dependencies(default_pose rclcpp halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+add_executable(default_pose
+  src/trajectory_publishers/default_pose.cpp
+)
+ament_target_dependencies(default_pose
+  ${dependencies}
+)
 
-add_executable(drive_and_turn src/trajectory_publishers/drive_and_turn.cpp)
-ament_target_dependencies(drive_and_turn rclcpp std_msgs halodi_msgs action_msgs)
+add_executable(drive_and_turn
+  src/trajectory_publishers/drive_and_turn.cpp
+)
+ament_target_dependencies(drive_and_turn
+  ${dependencies}
+)
 
-add_executable(full_body_extreme src/trajectory_publishers/full_body_extreme.cpp)
-ament_target_dependencies(full_body_extreme rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+add_executable(full_body_extreme
+  src/trajectory_publishers/full_body_extreme.cpp
+)
+ament_target_dependencies(full_body_extreme
+  ${dependencies}
+)
 
-add_executable(left_hand_task_space_box src/trajectory_publishers/left_hand_task_space_box.cpp)
-ament_target_dependencies(left_hand_task_space_box rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+add_executable(left_hand_task_space_box
+  src/trajectory_publishers/left_hand_task_space_box.cpp
+)
+ament_target_dependencies(left_hand_task_space_box
+  ${dependencies}
+)
 
-add_executable(neck_up_down src/trajectory_publishers/neck_up_down.cpp)
-ament_target_dependencies(neck_up_down rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+add_executable(neck_up_down
+  src/trajectory_publishers/neck_up_down.cpp
+)
+ament_target_dependencies(neck_up_down
+  ${dependencies}
+)
 
-add_executable(random_arm_motion_low_range src/trajectory_publishers/random_arm_motion_low_range.cpp)
-ament_target_dependencies(random_arm_motion_low_range rclcpp std_msgs halodi_msgs action_msgs tf2 tf2_geometry_msgs)
+add_executable(random_arm_motion_low_range
+  src/trajectory_publishers/random_arm_motion_low_range.cpp
+)
+ament_target_dependencies(random_arm_motion_low_range
+  ${dependencies}
+)
 
-add_executable(wave_right_hand src/trajectory_publishers/wave_right_hand.cpp)
-ament_target_dependencies(wave_right_hand rclcpp halodi_msgs action_msgs)
+add_executable(wave_right_hand
+  src/trajectory_publishers/wave_right_hand.cpp
+)
+ament_target_dependencies(wave_right_hand
+  ${dependencies}
+)
 
-add_executable(whole_body_state_subscriber src/subscribers/whole_body_state_subscriber.cpp)
-ament_target_dependencies(whole_body_state_subscriber rclcpp halodi_msgs)
+add_executable(whole_body_state_subscriber
+  src/subscribers/whole_body_state_subscriber.cpp)
+ament_target_dependencies(whole_body_state_subscriber
+  ${dependencies}
+)
 
-#############
-## Testing ##
-#############
+# ############
+# # Testing ##
+# ############
 if(BUILD_HALODI_TESTS)
-
   find_package(ament_cmake_gtest REQUIRED)
   include_directories(test)
   set(TEST_SOURCES test/gtest_main.cpp test/utils_test.cpp)
   set(TEST_PKG_EXE test_eve_ros2_examples)
   ament_add_gtest(${TEST_PKG_EXE} ${TEST_SOURCES})
-  ament_target_dependencies(${TEST_PKG_EXE}  unique_identifier_msgs halodi_msgs)
+  ament_target_dependencies(${TEST_PKG_EXE} unique_identifier_msgs halodi_msgs)
 
   find_package(halodi_ros2_code_quality REQUIRED)
   find_package(ament_cmake_clang_format REQUIRED)
@@ -71,32 +112,30 @@ if(BUILD_HALODI_TESTS)
 
   find_package(ament_cmake_clang_tidy REQUIRED)
   ament_clang_tidy(${CMAKE_BINARY_DIR} CONFIG_FILE ${halodi_ros2_code_quality_CLANG_TIDY})
-  # set_tests_properties(clang_tidy PROPERTIES TIMEOUT 120) 
 
+  # set_tests_properties(clang_tidy PROPERTIES TIMEOUT 120)
   find_package(ament_cmake_copyright REQUIRED)
   ament_copyright()
 
   # test fails on rclcpp checks, todo (michael) figure this out
   # find_package(ament_cmake_cppcheck REQUIRED)
   # ament_cppcheck(LANGUAGE C++ EXCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/test")
-
   find_package(ament_cmake_cpplint REQUIRED)
-  # ament_cpplint()
 
+  # ament_cpplint()
   find_package(ament_cmake_flake8 REQUIRED)
   ament_flake8()
 
   find_package(ament_cmake_pep257 REQUIRED)
+
   # ament_pep257()
-  
   find_package(ament_cmake_xmllint REQUIRED)
   ament_xmllint()
-
 endif()
 
-#############
-## Install ##
-#############
+# ############
+# # Install ##
+# ############
 ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   ${PROJECT_NAME}/whole_body_robot_bringup.py

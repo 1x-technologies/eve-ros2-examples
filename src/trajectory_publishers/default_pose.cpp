@@ -18,7 +18,7 @@
 
 #include <chrono>
 #include "action_msgs/msg/goal_status.hpp"
-#include "eve_ros2_examples/utils.h"
+#include "halodi_utils/RosMsgUtils.h"
 
 namespace eve_ros2_examples {
 
@@ -40,7 +40,7 @@ class DefaultPosePublisher : public rclcpp::Node {
         "/eve/whole_body_trajectory_status", 10, std::bind(&DefaultPosePublisher::statusCallback, this, _1));
 
     // Create a UUID for the first message.
-    uuidMsg_ = createRandomUuidMsg();
+    uuidMsg_ = halodi_utils::createRandomUuidMsg();
 
     // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent
     // immediatly arrives at the trajectory manager. Therefore, we use a timer and send the message every second till it
@@ -77,7 +77,7 @@ class DefaultPosePublisher : public rclcpp::Node {
 
   void publishTrajectory(unique_identifier_msgs::msg::UUID uuid_msg) {
     RCLCPP_INFO(this->get_logger(), "Sending trajectory, listening for whole_body_trajectory_status...");
-    publisher_->publish(genDefaultMsg(uuid_msg));
+    publisher_->publish(halodi_utils::genDefaultMsg(3.0, uuid_msg));
   }
 
  private:

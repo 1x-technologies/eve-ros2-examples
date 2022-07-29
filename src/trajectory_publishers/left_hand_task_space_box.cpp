@@ -36,7 +36,7 @@
 #include "halodi_msgs/msg/whole_body_trajectory.hpp"
 #include "halodi_msgs/msg/whole_body_trajectory_point.hpp"
 
-#include "eve_ros2_examples/utils.h"
+#include "halodi_utils/RosMsgUtils.h"
 namespace eve_ros2_examples {
 
 using halodi_msgs::msg::ReferenceFrameName;
@@ -56,7 +56,7 @@ class LeftHandTaskSpaceBoxPublisher : public rclcpp::Node {
         "/eve/whole_body_trajectory_status", 10, std::bind(&LeftHandTaskSpaceBoxPublisher::statusCallback, this, _1));
 
     // Create a UUID for the first message.
-    uuidMsg_ = createRandomUuidMsg();
+    uuidMsg_ = halodi_utils::createRandomUuidMsg();
 
     // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent
     // immediatly arrives at the trajectory manager. Therefore, we use a timer and send the message every second till it
@@ -81,7 +81,7 @@ class LeftHandTaskSpaceBoxPublisher : public rclcpp::Node {
         case 4:
           RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
 
-          uuidMsg_ = createRandomUuidMsg();
+          uuidMsg_ = halodi_utils::createRandomUuidMsg();
           publishTrajectory(uuidMsg_);
           break;
         default:

@@ -26,7 +26,7 @@
 #include "halodi_msgs/msg/whole_body_trajectory.hpp"
 #include "halodi_msgs/msg/whole_body_trajectory_point.hpp"
 
-#include "eve_ros2_examples/utils.h"
+#include "halodi_utils/RosMsgUtils.h"
 
 namespace eve_ros2_examples {
 
@@ -56,7 +56,7 @@ class WaveRightHandPublisher : public rclcpp::Node {
         "/eve/whole_body_trajectory_status", 10, std::bind(&WaveRightHandPublisher::statusCallback, this, _1));
 
     // Create a UUID for the first message.
-    uuidMsg_ = createRandomUuidMsg();
+    uuidMsg_ = halodi_utils::createRandomUuidMsg();
 
     // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent
     // immediatly arrives at the trajectory manager. Therefore, we use a timer and send the message every second till it
@@ -81,7 +81,7 @@ class WaveRightHandPublisher : public rclcpp::Node {
           break;
         case 4:
           RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
-          uuidMsg_ = createRandomUuidMsg();
+          uuidMsg_ = halodi_utils::createRandomUuidMsg();
           publishTrajectory(uuidMsg_);
           break;
         default:
@@ -122,12 +122,12 @@ class WaveRightHandPublisher : public rclcpp::Node {
     duration.sec = t;
     ret_msg.time_from_start = duration;
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -1.9));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.75));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, 0.9));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_PITCH, -1.65));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_YAW, -0.3));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_WRIST_PITCH, -0.15));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -1.9));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.75));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, 0.9));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_ELBOW_PITCH, -1.65));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_ELBOW_YAW, -0.3));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_WRIST_PITCH, -0.15));
     return ret_msg;
   }
 
@@ -138,12 +138,12 @@ class WaveRightHandPublisher : public rclcpp::Node {
     duration.sec = t;
     ret_msg.time_from_start = duration;
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -1.9));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.75));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, 0.9));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_PITCH, -0.6));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_YAW, -0.3));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_WRIST_PITCH, -0.15));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -1.9));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.75));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, 0.9));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_ELBOW_PITCH, -0.6));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_ELBOW_YAW, -0.3));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_WRIST_PITCH, -0.15));
     return ret_msg;
   }
 
@@ -154,12 +154,12 @@ class WaveRightHandPublisher : public rclcpp::Node {
     duration.sec = t;
     ret_msg.time_from_start = duration;
 
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -1.9));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.75));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, 0.9));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_PITCH, -1.85));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_ELBOW_YAW, -0.3));
-    ret_msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::RIGHT_WRIST_PITCH, -0.15));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_SHOULDER_PITCH, -1.9));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_SHOULDER_ROLL, -1.75));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_SHOULDER_YAW, 0.9));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_ELBOW_PITCH, -1.85));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_ELBOW_YAW, -0.3));
+    ret_msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::RIGHT_WRIST_PITCH, -0.15));
     return ret_msg;
   }
 

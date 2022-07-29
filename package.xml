@@ -16,6 +16,7 @@
   <depend>std_msgs</depend>
   <depend>action_msgs</depend>
   <depend>halodi_msgs</depend>
+  <depend>halodi_utils</depend>
   <depend>unique_identifier_msgs</depend>
 
   <test_depend>halodi_ros2_code_quality</test_depend>

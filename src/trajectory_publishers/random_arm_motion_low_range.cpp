@@ -20,9 +20,9 @@
 #include "action_msgs/msg/goal_status.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-#include "eve_ros2_examples/utils.h"
 #include "halodi_msgs/msg/joint_name.hpp"
 #include "halodi_msgs/msg/whole_body_trajectory.hpp"
+#include "halodi_utils/RosMsgUtils.h"
 
 namespace eve_ros2_examples {
 
@@ -48,7 +48,7 @@ class RandomArmMotionLowRangePublisher : public rclcpp::Node {
     genRandomJointTargets();
 
     // Create a UUID for the first message.
-    uuidMsg_ = createRandomUuidMsg();
+    uuidMsg_ = halodi_utils::createRandomUuidMsg();
 
     // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent
     // immediatly arrives at the trajectory manager. Therefore, we use a timer and send the message every second till it
@@ -73,7 +73,7 @@ class RandomArmMotionLowRangePublisher : public rclcpp::Node {
           break;
         case 4:
           RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
-          uuidMsg_ = createRandomUuidMsg();
+          uuidMsg_ = halodi_utils::createRandomUuidMsg();
           publishTrajectory(uuidMsg_);
           break;
         default:
@@ -123,7 +123,7 @@ class RandomArmMotionLowRangePublisher : public rclcpp::Node {
     for (int i = 0; i < NUM_TARGETS; i++) {
       trajectory_msg.trajectory_points.push_back(genTargetFromVector(trajPoints_[i], t += 4));
     }
-    trajectory_msg.trajectory_points.push_back(genDefaultTarget(t += 4));
+    trajectory_msg.trajectory_points.push_back(halodi_utils::genDefaultTarget(t += 4));
 
     RCLCPP_INFO(this->get_logger(), "Sending trajectory, listening for whole_body_trajectory_status...");
     publisher_->publish(trajectory_msg);
@@ -143,42 +143,42 @@ class RandomArmMotionLowRangePublisher : public rclcpp::Node {
     ret_msg.time_from_start = duration;
 
     int ind = 0;
-    ret_msg.task_space_commands.push_back(generateTaskSpaceCommand(halodi_msgs::msg::ReferenceFrameName::PELVIS,
-                                                                   halodi_msgs::msg::ReferenceFrameName::BASE, true,
-                                                                   0.0, 0.0, vec[ind++]));
+    ret_msg.task_space_commands.push_back(
+        halodi_utils::generateTaskSpaceCommand(halodi_msgs::msg::ReferenceFrameName::PELVIS,
+                                               halodi_msgs::msg::ReferenceFrameName::BASE, true, 0.0, 0.0, vec[ind++]));
 
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_SHOULDER_PITCH, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_SHOULDER_PITCH, vec[ind++]));
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_SHOULDER_ROLL, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_SHOULDER_ROLL, vec[ind++]));
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_SHOULDER_YAW, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_SHOULDER_YAW, vec[ind++]));
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_ELBOW_PITCH, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_ELBOW_PITCH, vec[ind++]));
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_ELBOW_YAW, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_ELBOW_YAW, vec[ind++]));
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_WRIST_PITCH, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_WRIST_PITCH, vec[ind++]));
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_WRIST_ROLL, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::LEFT_WRIST_ROLL, vec[ind++]));
 
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_SHOULDER_PITCH, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_SHOULDER_PITCH, vec[ind++]));
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_SHOULDER_ROLL, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_SHOULDER_ROLL, vec[ind++]));
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_SHOULDER_YAW, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_SHOULDER_YAW, vec[ind++]));
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_ELBOW_PITCH, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_ELBOW_PITCH, vec[ind++]));
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_ELBOW_YAW, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_ELBOW_YAW, vec[ind++]));
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_WRIST_PITCH, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_WRIST_PITCH, vec[ind++]));
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_WRIST_ROLL, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::RIGHT_WRIST_ROLL, vec[ind++]));
 
     ret_msg.joint_space_commands.push_back(
-        generateJointSpaceCommand(halodi_msgs::msg::JointName::NECK_PITCH, vec[ind++]));
+        halodi_utils::generateJointSpaceCommand(halodi_msgs::msg::JointName::NECK_PITCH, vec[ind++]));
 
     return ret_msg;
   }

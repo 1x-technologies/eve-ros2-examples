@@ -30,7 +30,7 @@
 #include "halodi_msgs/msg/whole_body_trajectory.hpp"
 #include "halodi_msgs/msg/whole_body_trajectory_point.hpp"
 
-#include "eve_ros2_examples/utils.h"
+#include "halodi_utils/RosMsgUtils.h"
 
 namespace eve_ros2_examples {
 
@@ -56,7 +56,7 @@ class NeckUpDownPublisher : public rclcpp::Node {
         "/eve/whole_body_trajectory_status", 10, std::bind(&NeckUpDownPublisher::statusCallback, this, _1));
 
     // Create a UUID for the first message.
-    uuidMsg_ = createRandomUuidMsg();
+    uuidMsg_ = halodi_utils::createRandomUuidMsg();
 
     // Because publishers and subscribers connect asynchronously, we cannot guarantee that a message that is sent
     // immediatly arrives at the trajectory manager. Therefore, we use a timer and send the message every second till it
@@ -82,7 +82,7 @@ class NeckUpDownPublisher : public rclcpp::Node {
         case 4:
           RCLCPP_INFO(this->get_logger(), "GoalStatus: STATUS_SUCCEEDED");
 
-          uuidMsg_ = createRandomUuidMsg();
+          uuidMsg_ = halodi_utils::createRandomUuidMsg();
           publishTrajectory(uuidMsg_);
           break;
         default:
@@ -106,7 +106,7 @@ class NeckUpDownPublisher : public rclcpp::Node {
       builtin_interfaces::msg::Duration duration;
       duration.sec = neck_timing.at(i);
       msg.time_from_start = duration;
-      msg.joint_space_commands.push_back(generateJointSpaceCommand(JointName::NECK_PITCH, neck_angles.at(i)));
+      msg.joint_space_commands.push_back(halodi_utils::generateJointSpaceCommand(JointName::NECK_PITCH, neck_angles.at(i)));
       trajectory_msg.trajectory_points.push_back(msg);
     }
 
