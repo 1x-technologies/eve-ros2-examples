@@ -6,3 +6,6 @@
 	path = ci_ws/src/halodi-ros2-code-quality
 	url = ../halodi-ros2-code-quality.git
 	branch = main
+[submodule "ci_ws/src/halodi-cpp-utils"]
+	path = ci_ws/src/halodi-cpp-utils
+	url = git@gitlab.com:halodi/controls/ros2/halodi-cpp-utils.git
