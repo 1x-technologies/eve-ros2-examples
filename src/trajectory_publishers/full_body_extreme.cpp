@@ -41,7 +41,7 @@ class FullBodyExtremePublisher : public rclcpp::Node {
  public:
   FullBodyExtremePublisher() : Node("full_body_extreme_publisher") {
     // set up publisher to trajectory topic
-    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
+    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/internal/whole_body_trajectory", 10);
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(

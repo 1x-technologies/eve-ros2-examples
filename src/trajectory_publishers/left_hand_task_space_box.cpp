@@ -51,7 +51,7 @@ using namespace std::chrono_literals;
 class LeftHandTaskSpaceBoxPublisher : public rclcpp::Node {
  public:
   LeftHandTaskSpaceBoxPublisher() : Node("left_hand_task_space_box_publisher") {
-    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
+    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/internal/whole_body_trajectory", 10);
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(
         "/eve/whole_body_trajectory_status", 10, std::bind(&LeftHandTaskSpaceBoxPublisher::statusCallback, this, _1));
 
