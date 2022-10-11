@@ -49,7 +49,7 @@ class WaveRightHandPublisher : public rclcpp::Node {
     latching_qos.transient_local();
 
     // set up publisher to trajectory topic
-    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
+    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/internal/whole_body_trajectory", latching_qos);
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(

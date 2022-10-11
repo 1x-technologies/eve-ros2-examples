@@ -33,7 +33,7 @@ class DefaultPosePublisher : public rclcpp::Node {
  public:
   DefaultPosePublisher() : Node("default_pose_publisher") {
     // set up publisher to trajectory topic
-    publisher_ = this->create_publisher<halodi_msgs::msg::WholeBodyTrajectory>("/eve/whole_body_trajectory", 10);
+    publisher_ = this->create_publisher<halodi_msgs::msg::WholeBodyTrajectory>("/eve/internal/whole_body_trajectory", 10);
 
     // subscribe to the tractory status topic
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(

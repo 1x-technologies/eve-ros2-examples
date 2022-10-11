@@ -29,7 +29,7 @@ using namespace std::chrono_literals;
 class DriveAndTurnPublisher : public rclcpp::Node {
  public:
   DriveAndTurnPublisher() : Node("driving_command_publisher"), count_(0) {
-    publisher_ = this->create_publisher<halodi_msgs::msg::DrivingCommand>("/eve/driving_command", 10);
+    publisher_ = this->create_publisher<halodi_msgs::msg::DrivingCommand>("/eve/internal/driving_command", 10);
     timer_ = this->create_wall_timer(50ms, std::bind(&DriveAndTurnPublisher::timerCallback, this));
   }
 

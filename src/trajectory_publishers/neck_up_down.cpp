@@ -51,7 +51,7 @@ class NeckUpDownPublisher : public rclcpp::Node {
     rclcpp::QoS latching_qos(1);
     latching_qos.transient_local();
 
-    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/whole_body_trajectory", latching_qos);
+    publisher_ = this->create_publisher<WholeBodyTrajectory>("/eve/internal/whole_body_trajectory", latching_qos);
     subscription_ = this->create_subscription<action_msgs::msg::GoalStatus>(
         "/eve/whole_body_trajectory_status", 10, std::bind(&NeckUpDownPublisher::statusCallback, this, _1));
 

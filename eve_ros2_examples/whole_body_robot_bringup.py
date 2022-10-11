@@ -117,7 +117,7 @@ class WholeBodyTrajectoryPublisher(Node):
         )  # initialize the underlying Node with the name whole_body_robot_bringup
 
         self._publisher = self.create_publisher(
-            WholeBodyTrajectory, "/eve/whole_body_trajectory", 10
+            WholeBodyTrajectory, "/eve/internal/whole_body_trajectory", 10
         )
 
         self._subscriber = self.create_subscription(
